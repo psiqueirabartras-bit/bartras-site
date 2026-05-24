@@ -59,7 +59,7 @@
       pointer-events: none;
       z-index: 0;
     }
- 
+
     /* ─── NAV ─── */
     nav {
       position: fixed;
@@ -1089,15 +1089,15 @@
       <div class="contact-form" id="contactForm">
         <div class="form-group">
           <label>Nome / Empresa</label>
-          <input type="text" id="fname" placeholder="Ex.: João — Empresa XYZ" />
+          <input type="text" id="fname" name="nome" placeholder="Ex.: João — Empresa XYZ" />
         </div>
         <div class="form-group">
           <label>E-mail</label>
-          <input type="email" id="femail" placeholder="seu@email.com.br" />
+          <input type="email" id="femail" name="email" placeholder="seu@email.com.br" />
         </div>
         <div class="form-group">
           <label>Tipo de projeto</label>
-          <select id="ftype">
+          <select id="ftype" name="tipo_projeto">
             <option value="">Selecionar...</option>
             <option>Site Institucional</option>
             <option>Site + Sistema</option>
@@ -1108,11 +1108,14 @@
         </div>
         <div class="form-group">
           <label>Descreva brevemente o projeto</label>
-          <textarea id="fmsg" rows="4" placeholder="Conte o que você precisa construir ou resolver..."></textarea>
+          <textarea id="fmsg" name="mensagem" rows="4" placeholder="Conte o que você precisa construir ou resolver..."></textarea>
         </div>
-        <button class="form-submit" onclick="handleSubmit()">Enviar mensagem →</button>
+        <button class="form-submit" id="formBtn" onclick="handleSubmit()">Enviar mensagem →</button>
         <div id="form-feedback" style="font-family:var(--mono);font-size:0.75rem;color:var(--teal);display:none;text-align:center;padding-top:0.5rem;">
           ✓ Mensagem recebida! Retornaremos em até 72h.
+        </div>
+        <div id="form-error" style="font-family:var(--mono);font-size:0.75rem;color:#f07070;display:none;text-align:center;padding-top:0.5rem;">
+          ✗ Erro ao enviar. Tente novamente ou mande e-mail direto.
         </div>
       </div>
     </div>
