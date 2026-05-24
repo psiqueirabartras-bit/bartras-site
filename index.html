@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bartras Consulting — Sites & Webapps para Empresas</title>
+  <meta name="description" content="Criamos sites institucionais e webapps sob medida para pequenas e médias empresas. Baseados em Curitiba-PR." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0e1012;
+      --bg2: #13171a;
+      --bg3: #181d21;
+      --border: rgba(93,202,165,0.12);
+      --teal: #5dcaa5;
+      --teal-dim: rgba(93,202,165,0.18);
+      --teal-glow: rgba(93,202,165,0.35);
+      --text: #dce8e2;
+      --text-muted: #7a9a8e;
+      --text-dim: #3d5a50;
+      --white: #f0f8f4;
+      --mono: 'DM Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow-x: hidden;
+      cursor: default;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.028;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    /* ─── GRID BACKGROUND ─── */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(93,202,165,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(93,202,165,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5vw;
+      height: 64px;
+      background: rgba(14,16,18,0.82);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--teal);
+      letter-spacing: 0.08em;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--text-muted); }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--teal); }
+
+    .nav-cta {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--teal);
+      border: 1px solid var(--teal);
+      padding: 6px 16px;
+      border-radius: 2px;
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-cta:hover { background: var(--teal); color: var(--bg); }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 64px 5vw 0;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(93,202,165,0.09) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-40%, -50%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 860px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--teal);
+      letter-spacing: 0.12em;
+      border: 1px solid var(--border);
+      background: var(--teal-dim);
+      padding: 5px 14px;
+      border-radius: 2px;
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.8s ease both;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .hero-title {
+      font-family: var(--sans);
+      font-weight: 800;
+      font-size: clamp(2.8rem, 6vw, 5.2rem);
+      line-height: 1.0;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      margin-bottom: 1.8rem;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+
+    .hero-title em {
+      font-style: normal;
+      color: var(--teal);
+      position: relative;
+    }
+
+    .hero-title em::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: 2px;
+      height: 2px;
+      background: var(--teal);
+      opacity: 0.4;
+    }
+
+    .hero-sub {
+      font-family: var(--mono);
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      max-width: 520px;
+      margin-bottom: 3rem;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      background: var(--teal);
+      color: var(--bg);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      padding: 14px 32px;
+      border-radius: 2px;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .btn-secondary {
+      display: inline-block;
+      color: var(--teal);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      padding: 14px 32px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--teal); color: var(--white); }
+
+    .hero-stats {
+      position: absolute;
+      right: 5vw;
+      bottom: 10vh;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      animation: fadeUp 0.8s 0.5s ease both;
+    }
+
+    .stat-item {
+      text-align: right;
+    }
+    .stat-num {
+      font-family: var(--mono);
+      font-size: 1.6rem;
+      color: var(--teal);
+      font-weight: 500;
+    }
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── SECTIONS ─── */
+    section {
+      position: relative;
+      z-index: 2;
+      padding: 120px 5vw;
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--teal);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      max-width: 40px;
+      height: 1px;
+      background: var(--teal);
+      opacity: 0.4;
+    }
+
+    .section-title {
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      color: var(--white);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-body {
+      font-family: var(--mono);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      max-width: 540px;
+    }
+
+    /* ─── SERVIÇOS ─── */
+    #servicos { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-top: 4rem;
+    }
+
+    .service-card {
+      background: var(--bg2);
+      padding: 2.5rem 2rem;
+      position: relative;
+      transition: background 0.25s;
+      overflow: hidden;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--teal);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    .service-card:hover { background: var(--bg3); }
+    .service-card:hover::before { transform: scaleX(1); }
+
+    .service-icon {
+      font-size: 1.4rem;
+      margin-bottom: 1.2rem;
+      display: block;
+    }
+
+    .service-name {
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--white);
+      margin-bottom: 0.6rem;
+    }
+
+    .service-desc {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .service-price {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--teal);
+      letter-spacing: 0.06em;
+      border: 1px solid var(--border);
+      background: var(--teal-dim);
+      padding: 4px 10px;
+      display: inline-block;
+      border-radius: 2px;
+    }
+
+    /* ─── PROCESSO ─── */
+    #processo { background: var(--bg); }
+
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .process-step {
+      position: relative;
+      padding-top: 1rem;
+    }
+
+    .step-num {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.2em;
+      margin-bottom: 0.8rem;
+    }
+
+    .step-line {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    .step-line::before {
+      content: '';
+      position: absolute;
+      left: 0; top: -2px;
+      width: 6px; height: 6px;
+      background: var(--teal);
+      border-radius: 50%;
+    }
+
+    .step-title {
+      font-family: var(--sans);
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    .step-desc {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* ─── SOBRE ─── */
+    #sobre { background: var(--bg2); border-top: 1px solid var(--border); }
+
+    .sobre-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    .sobre-features {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .feature-row {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .feature-icon {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border);
+      background: var(--teal-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      border-radius: 2px;
+    }
+
+    .feature-text strong {
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--white);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .feature-text span {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .sobre-terminal {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .terminal-bar {
+      background: rgba(93,202,165,0.06);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .terminal-dot:nth-child(1) { background: #ff5f57; }
+    .terminal-dot:nth-child(2) { background: #febc2e; }
+    .terminal-dot:nth-child(3) { background: #28c840; }
+    .terminal-title {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      margin-left: 6px;
+    }
+
+    .terminal-body {
+      padding: 1.5rem 1.8rem;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      line-height: 1.9;
+    }
+
+    .t-comment { color: var(--text-dim); }
+    .t-key { color: #7eb8d4; }
+    .t-val { color: var(--text-muted); }
+    .t-str { color: var(--teal); }
+    .t-num { color: #f0a070; }
+    .t-cursor {
+      display: inline-block;
+      width: 8px; height: 14px;
+      background: var(--teal);
+      margin-left: 2px;
+      vertical-align: middle;
+      animation: blink 1.2s step-end infinite;
+    }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    /* ─── PREÇOS ─── */
+    #precos { background: var(--bg); border-top: 1px solid var(--border); }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-top: 4rem;
+    }
+
+    .pricing-card {
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      padding: 2rem 1.8rem;
+      border-radius: 2px;
+      position: relative;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .pricing-card:hover {
+      border-color: var(--teal-glow);
+      transform: translateY(-4px);
+    }
+    .pricing-card.featured {
+      border-color: var(--teal);
+      background: linear-gradient(160deg, rgba(93,202,165,0.07), var(--bg2));
+    }
+    .pricing-card.featured::after {
+      content: 'MAIS PEDIDO';
+      position: absolute;
+      top: -11px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--teal);
+      color: var(--bg);
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      padding: 3px 12px;
+      border-radius: 2px;
+    }
+
+    .pricing-name {
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--white);
+      margin-bottom: 0.4rem;
+    }
+
+    .pricing-range {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      color: var(--teal);
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+    }
+
+    .pricing-period {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.1em;
+      margin-bottom: 1.5rem;
+    }
+
+    .pricing-divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    .pricing-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .pricing-features li {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .pricing-features li::before {
+      content: '→';
+      color: var(--teal);
+      flex-shrink: 0;
+    }
+
+    /* ─── CONTATO ─── */
+    #contato { background: var(--bg2); border-top: 1px solid var(--border); }
+
+    .contato-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: start;
+    }
+
+    .contato-info { display: flex; flex-direction: column; gap: 2rem; }
+
+    .contact-row {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    .contact-icon {
+      font-size: 1rem;
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border-radius: 2px;
+      background: var(--teal-dim);
+    }
+
+    .contact-detail strong {
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      color: var(--white);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .contact-detail span, .contact-detail a {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    .contact-detail a:hover { color: var(--teal); }
+
+    /* Formulário */
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--text-dim);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      padding: 12px 14px;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--teal);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--text-dim);
+    }
+
+    .form-group select option { background: var(--bg3); }
+
+    .form-submit {
+      background: var(--teal);
+      color: var(--bg);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      padding: 14px;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      text-align: center;
+    }
+    .form-submit:hover { opacity: 0.88; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid var(--border);
+      padding: 2rem 5vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--teal);
+      letter-spacing: 0.08em;
+    }
+    .footer-logo span { color: var(--text-dim); }
+
+    .footer-info {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+      text-align: right;
+    }
+
+    /* ─── SCROLL REVEAL ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 0 4vw; }
+      .nav-links { display: none; }
+
+      #hero { padding: 80px 5vw 60px; min-height: auto; }
+      .hero-stats { position: static; flex-direction: row; flex-wrap: wrap; gap: 1.5rem; margin-top: 3rem; }
+      .stat-item { text-align: left; }
+
+      .sobre-layout,
+      .contato-layout { grid-template-columns: 1fr; gap: 3rem; }
+
+      .sobre-terminal { order: -1; }
+
+      section { padding: 80px 5vw; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">bartras<span>.consulting</span></a>
+  <ul class="nav-links">
+    <li><a href="#servicos">Serviços</a></li>
+    <li><a href="#processo">Processo</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#precos">Preços</a></li>
+  </ul>
+  <a href="#contato" class="nav-cta">falar com a equipe →</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">Curitiba · PR — Tecnologia para PMEs</div>
+    <h1 class="hero-title">
+      Seu negócio<br/>
+      no digital,<br/>
+      do jeito <em>certo</em>.
+    </h1>
+    <p class="hero-sub">
+      Sites institucionais e webapps sob medida para pequenas e médias empresas.
+      Entregamos tecnologia que funciona — sem enrolação, dentro do prazo.
+    </p>
+    <div class="hero-actions">
+      <a href="#contato" class="btn-primary">Solicitar orçamento</a>
+      <a href="#servicos" class="btn-secondary">Ver serviços</a>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num">72h</div>
+      <div class="stat-label">resposta garantida</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">CNPJ</div>
+      <div class="stat-label">empresa ativa</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">personalizado</div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVIÇOS -->
+<section id="servicos">
+  <div class="reveal">
+    <div class="section-label">01 — Serviços</div>
+    <h2 class="section-title">O que entregamos</h2>
+    <p class="section-body">
+      Do site institucional ao sistema complexo — cada projeto é tratado com a atenção que merece, sem templates genéricos.
+    </p>
+  </div>
+  <div class="services-grid reveal">
+    <div class="service-card">
+      <span class="service-icon">🖥️</span>
+      <div class="service-name">Site Institucional</div>
+      <p class="service-desc">Presença digital profissional com design exclusivo, otimizado para SEO e carregamento rápido. Ideal para empresas que querem credibilidade online.</p>
+      <span class="service-price">R$ 3.000 – R$ 6.000</span>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">⚙️</span>
+      <div class="service-name">Site + Sistema</div>
+      <p class="service-desc">Site integrado com painel administrativo, cadastros, fluxos de dados ou integrações com sistemas existentes. Solução completa em uma entrega.</p>
+      <span class="service-price">R$ 10.000 – R$ 25.000</span>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">🚀</span>
+      <div class="service-name">WebApp sob Medida</div>
+      <p class="service-desc">Aplicação web completa para automatizar processos internos, atender clientes ou escalar operações. Arquitetura pensada para crescer com o negócio.</p>
+      <span class="service-price">R$ 25.000 – R$ 100.000+</span>
+    </div>
+    <div class="service-card">
+      <span class="service-icon">🔧</span>
+      <div class="service-name">Manutenção Mensal</div>
+      <p class="service-desc">Suporte técnico contínuo, atualizações de segurança, hospedagem monitorada e pequenas evoluções. Seu projeto sempre no ar e funcionando.</p>
+      <span class="service-price">R$ 400 – R$ 1.200 / mês</span>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESSO -->
+<section id="processo">
+  <div class="reveal">
+    <div class="section-label">02 — Como trabalhamos</div>
+    <h2 class="section-title">Processo transparente,<br/>entrega previsível</h2>
+  </div>
+  <div class="process-grid">
+    <div class="process-step reveal">
+      <div class="step-num">// 01</div>
+      <div class="step-line"></div>
+      <div class="step-title">Diagnóstico</div>
+      <p class="step-desc">Entendemos o seu negócio, objetivos e o problema real que precisa ser resolvido — antes de qualquer linha de código.</p>
+    </div>
+    <div class="process-step reveal">
+      <div class="step-num">// 02</div>
+      <div class="step-line"></div>
+      <div class="step-title">Proposta clara</div>
+      <p class="step-desc">Escopo detalhado, prazo definido e preço fechado. Sem surpresas depois da assinatura.</p>
+    </div>
+    <div class="process-step reveal">
+      <div class="step-num">// 03</div>
+      <div class="step-line"></div>
+      <div class="step-title">Desenvolvimento</div>
+      <p class="step-desc">Sprints curtos com entregas parciais visíveis. Você acompanha o progresso e dá feedback em tempo real.</p>
+    </div>
+    <div class="process-step reveal">
+      <div class="step-num">// 04</div>
+      <div class="step-line"></div>
+      <div class="step-title">Go-live & suporte</div>
+      <p class="step-desc">Publicação, treinamento de uso e período de garantia incluídos. Não sumimos depois da entrega.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section id="sobre">
+  <div class="sobre-layout">
+    <div class="reveal">
+      <div class="section-label">03 — Sobre</div>
+      <h2 class="section-title">Tecnologia com<br/>foco em negócio</h2>
+      <p class="section-body">
+        A Bartras Consulting nasceu para resolver um problema recorrente nas PMEs brasileiras: projetos de tecnologia que ficam caros, atrasam e não entregam valor de verdade.
+        <br/><br/>
+        Combinamos visão de negócio com execução técnica sólida — para que você invista em tecnologia sabendo exatamente o que vai receber.
+      </p>
+      <div class="sobre-features">
+        <div class="feature-row">
+          <div class="feature-icon">🎯</div>
+          <div class="feature-text">
+            <strong>Foco em resultado</strong>
+            <span>Cada decisão técnica está atrelada a um objetivo de negócio claro.</span>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">🔒</div>
+          <div class="feature-text">
+            <strong>Empresa regularizada</strong>
+            <span>CNPJ ativo, contratos formais e nota fiscal em toda operação.</span>
+          </div>
+        </div>
+        <div class="feature-row">
+          <div class="feature-icon">📍</div>
+          <div class="feature-text">
+            <strong>Base em Curitiba-PR</strong>
+            <span>Atendimento presencial ou remoto em todo o Brasil.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sobre-terminal reveal">
+      <div class="terminal-bar">
+        <div class="terminal-dot"></div>
+        <div class="terminal-dot"></div>
+        <div class="terminal-dot"></div>
+        <span class="terminal-title">bartras.json</span>
+      </div>
+      <div class="terminal-body">
+        <span class="t-comment">// Bartras Consulting</span><br/>
+        {<br/>
+        &nbsp;&nbsp;<span class="t-key">"empresa"</span>: <span class="t-str">"Bartras Consulting"</span>,<br/>
+        &nbsp;&nbsp;<span class="t-key">"cnpj"</span>: <span class="t-str">"ativo ✓"</span>,<br/>
+        &nbsp;&nbsp;<span class="t-key">"cidade"</span>: <span class="t-str">"Curitiba, PR"</span>,<br/>
+        &nbsp;&nbsp;<span class="t-key">"foco"</span>: <span class="t-str">"PMEs brasileiras"</span>,<br/>
+        &nbsp;&nbsp;<span class="t-key">"especialidades"</span>: [<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"sites institucionais"</span>,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"webapps sob medida"</span>,<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="t-str">"sistemas integrados"</span><br/>
+        &nbsp;&nbsp;],<br/>
+        &nbsp;&nbsp;<span class="t-key">"garantia_pos_entrega"</span>: <span class="t-str">"true"</span>,<br/>
+        &nbsp;&nbsp;<span class="t-key">"prazo_resposta"</span>: <span class="t-str">"72h"</span>,<br/>
+        &nbsp;&nbsp;<span class="t-key">"status"</span>: <span class="t-str">"aceitando projetos"</span><br/>
+        }<span class="t-cursor"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PREÇOS -->
+<section id="precos">
+  <div class="reveal">
+    <div class="section-label">04 — Investimento</div>
+    <h2 class="section-title">Transparência<br/>desde o início</h2>
+    <p class="section-body">
+      Valores de referência para cada perfil de projeto. O orçamento final é personalizado após o diagnóstico.
+    </p>
+  </div>
+  <div class="pricing-grid reveal">
+    <div class="pricing-card">
+      <div class="pricing-name">Site Institucional</div>
+      <div class="pricing-range">R$ 3–6k</div>
+      <div class="pricing-period">pagamento único</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>Design exclusivo, responsivo</li>
+        <li>Até 6 páginas / seções</li>
+        <li>Formulário de contato</li>
+        <li>SEO básico configurado</li>
+        <li>Hospedagem 1º ano inclusa</li>
+      </ul>
+    </div>
+    <div class="pricing-card featured">
+      <div class="pricing-name">Site + Sistema</div>
+      <div class="pricing-range">R$ 10–25k</div>
+      <div class="pricing-period">pagamento único</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>Tudo do Site Institucional</li>
+        <li>Painel administrativo</li>
+        <li>Módulo de cadastros e relatórios</li>
+        <li>Integrações com APIs externas</li>
+        <li>Treinamento de uso incluído</li>
+      </ul>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-name">WebApp sob Medida</div>
+      <div class="pricing-range">R$ 25–100k+</div>
+      <div class="pricing-period">conforme escopo</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>Levantamento de requisitos completo</li>
+        <li>Arquitetura escalável</li>
+        <li>Módulos customizados por processo</li>
+        <li>Entregas em sprints visíveis</li>
+        <li>Suporte pós-entrega dedicado</li>
+      </ul>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-name">Manutenção Mensal</div>
+      <div class="pricing-range">R$ 400–1,2k</div>
+      <div class="pricing-period">recorrente / mês</div>
+      <div class="pricing-divider"></div>
+      <ul class="pricing-features">
+        <li>Hospedagem monitorada</li>
+        <li>Atualizações de segurança</li>
+        <li>Backup automático</li>
+        <li>Pequenas melhorias mensais</li>
+        <li>Suporte prioritário por WhatsApp</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- CONTATO -->
+<section id="contato">
+  <div class="contato-layout">
+    <div class="reveal">
+      <div class="section-label">05 — Contato</div>
+      <h2 class="section-title">Vamos conversar<br/>sobre seu projeto?</h2>
+      <p class="section-body">
+        Nenhum compromisso. Respondemos em até 72 horas com uma análise inicial gratuita do seu projeto.
+      </p>
+      <div class="contato-info" style="margin-top: 2.5rem;">
+        <div class="contact-row">
+          <div class="contact-icon">📧</div>
+          <div class="contact-detail">
+            <strong>E-mail</strong>
+            <a href="mailto:contato@bartras.com.br">contato@bartras.com.br</a>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-icon">📍</div>
+          <div class="contact-detail">
+            <strong>Localização</strong>
+            <span>Curitiba, Paraná — Brasil<br/>Atendimento presencial e remoto</span>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-icon">🕐</div>
+          <div class="contact-detail">
+            <strong>Horário</strong>
+            <span>Segunda a sexta · 9h às 18h</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <div class="contact-form" id="contactForm">
+        <div class="form-group">
+          <label>Nome / Empresa</label>
+          <input type="text" id="fname" placeholder="Ex.: João — Empresa XYZ" />
+        </div>
+        <div class="form-group">
+          <label>E-mail</label>
+          <input type="email" id="femail" placeholder="seu@email.com.br" />
+        </div>
+        <div class="form-group">
+          <label>Tipo de projeto</label>
+          <select id="ftype">
+            <option value="">Selecionar...</option>
+            <option>Site Institucional</option>
+            <option>Site + Sistema</option>
+            <option>WebApp sob Medida</option>
+            <option>Manutenção de sistema existente</option>
+            <option>Ainda não sei — quero orientação</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Descreva brevemente o projeto</label>
+          <textarea id="fmsg" rows="4" placeholder="Conte o que você precisa construir ou resolver..."></textarea>
+        </div>
+        <button class="form-submit" onclick="handleSubmit()">Enviar mensagem →</button>
+        <div id="form-feedback" style="font-family:var(--mono);font-size:0.75rem;color:var(--teal);display:none;text-align:center;padding-top:0.5rem;">
+          ✓ Mensagem recebida! Retornaremos em até 72h.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">bartras<span>.consulting</span></div>
+  <div class="footer-info">
+    Bartras Consulting · CNPJ ativo · Curitiba, PR<br/>
+    © 2025 · Todos os direitos reservados
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  // Stagger siblings
+  document.querySelectorAll('.services-grid, .process-grid, .pricing-grid').forEach(grid => {
+    grid.querySelectorAll('.service-card, .process-step, .pricing-card').forEach((el, i) => {
+      el.style.transitionDelay = `${i * 0.08}s`;
+      el.classList.add('reveal');
+      observer.observe(el);
+    });
+  });
+
+  // Form
+  function handleSubmit() {
+    const name = document.getElementById('fname').value.trim();
+    const email = document.getElementById('femail').value.trim();
+    if (!name || !email) {
+      alert('Por favor, preencha pelo menos nome e e-mail.');
+      return;
+    }
+    document.getElementById('contactForm').style.opacity = '0.4';
+    document.getElementById('contactForm').style.pointerEvents = 'none';
+    document.getElementById('form-feedback').style.display = 'block';
+  }
+
+  // Active nav link
+  const sections = document.querySelectorAll('section[id]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.style.color = a.getAttribute('href') === `#${current}` ? 'var(--teal)' : '';
+    });
+  });
+</script>
+</body>
+</html>
