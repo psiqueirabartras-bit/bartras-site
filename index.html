@@ -1404,7 +1404,7 @@
 <script>
 (function() {
   // ── State ──
-  const state = { step: 'start', lead: { nome: '', email: '', interesse: '' } };
+  const state = { step: 'start', lead: { nome: '', email: '', interesse: '', descricao: '' } };
 
   // ── Flows ──
   const flows = {
@@ -1473,11 +1473,15 @@
     lead_interesse: {
       msg: 'Perfeito! Qual serviço te interessa mais?',
       opts: [
-        { label: '🖥️ Site Institucional', next: 'lead_fim', val: 'Site Institucional' },
-        { label: '💬 Chatbot de Atendimento', next: 'lead_fim', val: 'Chatbot de Atendimento' },
-        { label: '🖥️💬 Site + Chatbot', next: 'lead_fim', val: 'Site + Chatbot' },
-        { label: '❓ Ainda não sei', next: 'lead_fim', val: 'Ainda não sei' },
+        { label: '🖥️ Site Institucional', next: 'lead_descricao', val: 'Site Institucional' },
+        { label: '💬 Chatbot de Atendimento', next: 'lead_descricao', val: 'Chatbot de Atendimento' },
+        { label: '🖥️💬 Site + Chatbot', next: 'lead_descricao', val: 'Site + Chatbot' },
+        { label: '❓ Ainda não sei', next: 'lead_descricao', val: 'Ainda não sei' },
       ]
+    },
+    lead_descricao: {
+      msg: 'Última pergunta! 😊\n\nDescreva brevemente o que você espera do projeto (pode ser simples, ex: "quero um site para minha clínica com agendamento online"):',
+      input: true
     },
     lead_fim: {
       msg: '✅ Tudo certo, {nome}!\n\nNossa equipe vai entrar em contato pelo e-mail {email} em até 72 horas com uma análise gratuita do seu projeto.\n\nAté logo! 👋',
@@ -1521,7 +1525,7 @@
             addMsg(opt.label, 'user');
             optsEl.innerHTML = '';
             if (opt.val) state.lead.interesse = opt.val;
-            if (opt.next === 'lead_fim') sendLead();
+            // sendLead is triggered via handleInput for lead_descricao
             setTimeout(() => renderStep(opt.next), 400);
           };
           optsEl.appendChild(btn);
@@ -1543,6 +1547,10 @@
     } else if (state.step === 'lead_email') {
       state.lead.email = val;
       setTimeout(() => renderStep('lead_interesse'), 400);
+    } else if (state.step === 'lead_descricao') {
+      state.lead.descricao = val;
+      sendLead();
+      setTimeout(() => renderStep('lead_fim'), 400);
     }
   }
 
@@ -1561,6 +1569,7 @@
           nome: state.lead.nome,
           email: state.lead.email,
           interesse: state.lead.interesse,
+          descricao: state.lead.descricao,
           origem: 'Chatbot do site'
         })
       });
