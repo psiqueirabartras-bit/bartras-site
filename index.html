@@ -1065,7 +1065,7 @@
           <div class="contact-icon">📧</div>
           <div class="contact-detail">
             <strong>E-mail</strong>
-            <a href="mailto:psiqueirabartras@gmail.com">psiqueirabartras@gmail.com</a>
+            <a href="mailto:contato@bartras.com.br">contato@bartras.com.br</a>
           </div>
         </div>
         <div class="contact-row">
@@ -1202,6 +1202,385 @@
       a.style.color = a.getAttribute('href') === `#${current}` ? 'var(--teal)' : '';
     });
   });
+</script>
+
+<!-- ─── CHATBOT WIDGET ─── -->
+<style>
+  #cb-toggle {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--teal);
+    border: none;
+    cursor: pointer;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 24px rgba(93,202,165,0.35);
+    transition: transform 0.2s, opacity 0.2s;
+  }
+  #cb-toggle:hover { transform: scale(1.08); opacity: 0.9; }
+  #cb-toggle svg { width: 26px; height: 26px; fill: #0e1012; }
+
+  #cb-box {
+    position: fixed;
+    bottom: 96px;
+    right: 28px;
+    width: 340px;
+    max-height: 520px;
+    background: #13171a;
+    border: 1px solid rgba(93,202,165,0.18);
+    border-radius: 8px;
+    display: none;
+    flex-direction: column;
+    z-index: 998;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    overflow: hidden;
+    font-family: 'DM Mono', monospace;
+  }
+  #cb-box.open { display: flex; }
+
+  #cb-header {
+    background: rgba(93,202,165,0.08);
+    border-bottom: 1px solid rgba(93,202,165,0.12);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cb-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--teal);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+  .cb-header-info strong {
+    display: block;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    color: #f0f8f4;
+  }
+  .cb-header-info span {
+    font-size: 0.65rem;
+    color: #5dcaa5;
+    letter-spacing: 0.08em;
+  }
+  #cb-close {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: #3d5a50;
+    font-size: 1.2rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 4px;
+  }
+  #cb-close:hover { color: #5dcaa5; }
+
+  #cb-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(93,202,165,0.2) transparent;
+  }
+
+  .cb-msg {
+    max-width: 88%;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    padding: 9px 13px;
+    border-radius: 4px;
+    animation: cbFadeIn 0.2s ease;
+  }
+  @keyframes cbFadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+  .cb-msg.bot {
+    background: rgba(93,202,165,0.08);
+    border: 1px solid rgba(93,202,165,0.12);
+    color: #dce8e2;
+    align-self: flex-start;
+  }
+  .cb-msg.user {
+    background: #5dcaa5;
+    color: #0e1012;
+    align-self: flex-end;
+    font-weight: 500;
+  }
+
+  #cb-options {
+    padding: 10px 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .cb-opt {
+    background: transparent;
+    border: 1px solid rgba(93,202,165,0.25);
+    color: #5dcaa5;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.73rem;
+    padding: 8px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.18s, color 0.18s;
+    letter-spacing: 0.03em;
+  }
+  .cb-opt:hover { background: rgba(93,202,165,0.12); color: #f0f8f4; }
+
+  #cb-input-row {
+    padding: 10px 16px 14px;
+    display: none;
+    gap: 8px;
+  }
+  #cb-input-row.show { display: flex; }
+  #cb-input {
+    flex: 1;
+    background: #181d21;
+    border: 1px solid rgba(93,202,165,0.18);
+    color: #dce8e2;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    padding: 9px 12px;
+    border-radius: 3px;
+    outline: none;
+  }
+  #cb-input:focus { border-color: #5dcaa5; }
+  #cb-send {
+    background: #5dcaa5;
+    border: none;
+    color: #0e1012;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 9px 14px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  #cb-send:hover { opacity: 0.85; }
+
+  @media (max-width: 400px) {
+    #cb-box { width: calc(100vw - 32px); right: 16px; }
+    #cb-toggle { right: 16px; bottom: 16px; }
+  }
+</style>
+
+<!-- Toggle button -->
+<button id="cb-toggle" onclick="cbToggle()" title="Falar com a Bartras">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 2H4C2.9 2 2 2.9 2 4v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 10H6V10h12v2zm0-3H6V7h12v2z"/>
+  </svg>
+</button>
+
+<!-- Chat box -->
+<div id="cb-box">
+  <div id="cb-header">
+    <div class="cb-avatar">💬</div>
+    <div class="cb-header-info">
+      <strong>Bartras Consulting</strong>
+      <span>● online agora</span>
+    </div>
+    <button id="cb-close" onclick="cbToggle()">✕</button>
+  </div>
+  <div id="cb-messages"></div>
+  <div id="cb-options"></div>
+  <div id="cb-input-row">
+    <input id="cb-input" type="text" placeholder="Digite aqui..." />
+    <button id="cb-send">→</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ── State ──
+  const state = { step: 'start', lead: { nome: '', email: '', interesse: '' } };
+
+  // ── Flows ──
+  const flows = {
+    start: {
+      msg: 'Olá! 👋 Sou o assistente virtual da Bartras Consulting.\n\nComo posso te ajudar?',
+      opts: [
+        { label: '📋 Conhecer os serviços', next: 'servicos' },
+        { label: '💰 Ver preços', next: 'precos' },
+        { label: '⏱️ Qual o prazo de entrega?', next: 'prazo' },
+        { label: '📩 Quero um orçamento', next: 'lead_nome' },
+      ]
+    },
+    servicos: {
+      msg: 'Oferecemos três soluções principais:\n\n🖥️ Site Institucional — presença digital profissional\n💬 Chatbot de Atendimento — atendimento automático 24h no site ou WhatsApp\n🖥️💬 Site + Chatbot — os dois em uma entrega\n\nO que você gostaria de saber mais?',
+      opts: [
+        { label: '🖥️ Site Institucional', next: 'info_site' },
+        { label: '💬 Chatbot de Atendimento', next: 'info_chatbot' },
+        { label: '🖥️💬 Site + Chatbot', next: 'info_combo' },
+        { label: '📩 Quero um orçamento', next: 'lead_nome' },
+        { label: '← Voltar', next: 'start' },
+      ]
+    },
+    info_site: {
+      msg: '🖥️ Site Institucional\n\nDesign exclusivo e responsivo, SEO configurado, até 6 seções, formulário de contato e hospedagem inclusa no primeiro ano.\n\nInvestimento: R$ 3.000 – R$ 6.000\nPrazo médio: 2 a 4 semanas',
+      opts: [
+        { label: '📩 Quero um orçamento', next: 'lead_nome' },
+        { label: '← Voltar', next: 'servicos' },
+      ]
+    },
+    info_chatbot: {
+      msg: '💬 Chatbot de Atendimento\n\nFluxo de atendimento personalizado integrado ao seu site e/ou WhatsApp. Responde dúvidas, coleta leads e direciona clientes — 24h por dia, sem depender de atendente.\n\nInvestimento: R$ 2.500 – R$ 5.000\nPrazo médio: 1 a 3 semanas',
+      opts: [
+        { label: '📩 Quero um orçamento', next: 'lead_nome' },
+        { label: '← Voltar', next: 'servicos' },
+      ]
+    },
+    info_combo: {
+      msg: '🖥️💬 Site + Chatbot\n\nA combinação completa: site profissional com chatbot integrado desde o primeiro dia. Presença digital e atendimento automatizado em uma entrega só.\n\nInvestimento: R$ 5.000 – R$ 10.000\nPrazo médio: 3 a 5 semanas',
+      opts: [
+        { label: '📩 Quero um orçamento', next: 'lead_nome' },
+        { label: '← Voltar', next: 'servicos' },
+      ]
+    },
+    precos: {
+      msg: '💰 Valores de referência:\n\n🖥️ Site Institucional → R$ 3.000 – 6.000\n💬 Chatbot de Atendimento → R$ 2.500 – 5.000\n🖥️💬 Site + Chatbot → R$ 5.000 – 10.000\n🔧 Manutenção mensal → R$ 400 – 1.200\n\nO valor final depende do escopo. Orçamento personalizado é gratuito e sem compromisso!',
+      opts: [
+        { label: '📩 Solicitar orçamento grátis', next: 'lead_nome' },
+        { label: '← Voltar', next: 'start' },
+      ]
+    },
+    prazo: {
+      msg: '⏱️ Prazos médios de entrega:\n\n🖥️ Site Institucional → 2 a 4 semanas\n💬 Chatbot → 1 a 3 semanas\n🖥️💬 Site + Chatbot → 3 a 5 semanas\n\nOs prazos são definidos formalmente na proposta, com cronograma detalhado.',
+      opts: [
+        { label: '📩 Quero um orçamento', next: 'lead_nome' },
+        { label: '← Voltar', next: 'start' },
+      ]
+    },
+    lead_nome: {
+      msg: 'Ótimo! Vou te conectar com nossa equipe. 😊\n\nPrimeiro, qual é o seu nome?',
+      input: true
+    },
+    lead_email: {
+      msg: 'Prazer, {nome}! Agora me passa seu melhor e-mail:',
+      input: true
+    },
+    lead_interesse: {
+      msg: 'Perfeito! Qual serviço te interessa mais?',
+      opts: [
+        { label: '🖥️ Site Institucional', next: 'lead_fim', val: 'Site Institucional' },
+        { label: '💬 Chatbot de Atendimento', next: 'lead_fim', val: 'Chatbot de Atendimento' },
+        { label: '🖥️💬 Site + Chatbot', next: 'lead_fim', val: 'Site + Chatbot' },
+        { label: '❓ Ainda não sei', next: 'lead_fim', val: 'Ainda não sei' },
+      ]
+    },
+    lead_fim: {
+      msg: '✅ Tudo certo, {nome}!\n\nNossa equipe vai entrar em contato pelo e-mail {email} em até 72 horas com uma análise gratuita do seu projeto.\n\nAté logo! 👋',
+      opts: [
+        { label: '← Voltar ao início', next: 'start' },
+      ]
+    },
+  };
+
+  // ── Helpers ──
+  function addMsg(text, type) {
+    const el = document.createElement('div');
+    el.className = `cb-msg ${type}`;
+    el.textContent = text.replace('{nome}', state.lead.nome).replace('{email}', state.lead.email);
+    document.getElementById('cb-messages').appendChild(el);
+    el.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function renderStep(key) {
+    state.step = key;
+    const flow = flows[key];
+    if (!flow) return;
+
+    setTimeout(() => {
+      addMsg(flow.msg.replace('{nome}', state.lead.nome).replace('{email}', state.lead.email), 'bot');
+
+      const optsEl = document.getElementById('cb-options');
+      const inputRow = document.getElementById('cb-input-row');
+      optsEl.innerHTML = '';
+      inputRow.classList.remove('show');
+
+      if (flow.input) {
+        inputRow.classList.add('show');
+        document.getElementById('cb-input').focus();
+      } else if (flow.opts) {
+        flow.opts.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'cb-opt';
+          btn.textContent = opt.label;
+          btn.onclick = () => {
+            addMsg(opt.label, 'user');
+            optsEl.innerHTML = '';
+            if (opt.val) state.lead.interesse = opt.val;
+            if (opt.next === 'lead_fim') sendLead();
+            setTimeout(() => renderStep(opt.next), 400);
+          };
+          optsEl.appendChild(btn);
+        });
+      }
+    }, key === 'start' ? 300 : 500);
+  }
+
+  function handleInput() {
+    const val = document.getElementById('cb-input').value.trim();
+    if (!val) return;
+    document.getElementById('cb-input').value = '';
+    addMsg(val, 'user');
+    document.getElementById('cb-input-row').classList.remove('show');
+
+    if (state.step === 'lead_nome') {
+      state.lead.nome = val;
+      setTimeout(() => renderStep('lead_email'), 400);
+    } else if (state.step === 'lead_email') {
+      state.lead.email = val;
+      setTimeout(() => renderStep('lead_interesse'), 400);
+    }
+  }
+
+  async function sendLead() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const dataHora = `${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}`;
+    const subject = `Chatbot_${state.lead.nome}_${dataHora}`;
+
+    try {
+      await fetch('https://formspree.io/f/xjgzerwr', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          _subject: subject,
+          nome: state.lead.nome,
+          email: state.lead.email,
+          interesse: state.lead.interesse,
+          origem: 'Chatbot do site'
+        })
+      });
+    } catch(e) { console.warn('Formspree error', e); }
+  }
+
+  // ── Init ──
+  window.cbToggle = function() {
+    const box = document.getElementById('cb-box');
+    const isOpen = box.classList.toggle('open');
+    if (isOpen && document.getElementById('cb-messages').children.length === 0) {
+      renderStep('start');
+    }
+  };
+
+  document.getElementById('cb-send').onclick = handleInput;
+  document.getElementById('cb-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleInput();
+  });
+})();
 </script>
 </body>
 </html>
