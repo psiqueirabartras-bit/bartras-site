@@ -424,8 +424,9 @@
 
 <div class="modal-overlay" id="modal-proposta">
   <div class="modal" style="max-width:520px">
-    <div class="modal-header"><div class="modal-title">Gerar Proposta</div><button class="modal-close" onclick="fecharModal('modal-proposta')">✕</button></div>
+    <div class="modal-header"><div class="modal-title" id="modal-proposta-title">Gerar Proposta</div><button class="modal-close" onclick="fecharModal('modal-proposta')">✕</button></div>
     <div class="modal-body">
+      <input type="hidden" id="prop-id" />
       <div class="form-group"><label>Cliente *</label><select id="prop-cliente"><option value="">Selecionar...</option></select></div>
       <div class="form-group"><label>Serviço</label>
         <select id="prop-servico"><option>Site Institucional</option><option>Chatbot de Atendimento</option><option>Site + Chatbot</option><option>Manutenção Mensal</option></select>
@@ -521,7 +522,20 @@ window.abrirModal = async (id, modo, dados) => {
 
   if (id === 'modal-projeto') await popularSelect('p-cliente', 'clientes', 'nome');
   if (id === 'modal-tarefa')  await popularSelect('t-projeto', 'projetos', 'nome');
-  if (id === 'modal-proposta') await popularSelect('prop-cliente', 'clientes', 'nome');
+  if (id === 'modal-proposta') {
+    await popularSelect('prop-cliente', 'clientes', 'nome');
+    if (modo === 'editar' && dados) {
+      document.getElementById('modal-proposta-title').textContent = 'Editar Proposta';
+      document.getElementById('prop-id').value = dados.id;
+      document.getElementById('prop-cliente').value = dados.cliente_id || '';
+      document.getElementById('prop-servico').value = dados.servico || '';
+      document.getElementById('prop-valor').value = dados.valor || '';
+      document.getElementById('prop-prazo').value = dados.prazo || '';
+      document.getElementById('prop-obs').value = dados.observacoes || '';
+    } else {
+      document.getElementById('modal-proposta-title').textContent = 'Gerar Proposta';
+    }
+  }
   if (id === 'modal-fin') document.getElementById('f-data').value = hoje();
 
   // Preencher dados para edição
@@ -903,13 +917,15 @@ window.gerarProposta = async () => {
   const valor = document.getElementById('prop-valor').value;
   if (!cId) return alert('Selecione um cliente.');
   if (!valor) return alert('Informe o valor.');
+  const id = document.getElementById('prop-id').value;
   const { data: cli } = await sb.from('clientes').select('nome').eq('id', cId).single();
   const servico = document.getElementById('prop-servico').value;
   const prazo = document.getElementById('prop-prazo').value;
   const obs = document.getElementById('prop-obs').value;
-  const { error } = await sb.from('propostas').insert({ cliente_id: cId, servico, valor, prazo, observacoes: obs, criado_em: new Date().toISOString() });
+  const payload = { cliente_id: cId, servico, valor, prazo, observacoes: obs };
+  const { error } = id ? await sb.from('propostas').update(payload).eq('id', id) : await sb.from('propostas').insert({ ...payload, criado_em: new Date().toISOString() });
   if (error) return alert('Erro: ' + error.message);
-  toast('✓ Proposta salva');
+  toast(id ? '✓ Proposta atualizada' : '✓ Proposta salva');
   fecharModal('modal-proposta');
   const dataHoje = new Date().toLocaleDateString('pt-BR');
   document.getElementById('prop-preview-content').innerHTML = `
@@ -935,13 +951,39 @@ window.gerarProposta = async () => {
   renderPropostas();
 };
 
+window.visualizarProposta = async (id) => {
+  const { data: p } = await sb.from('propostas').select('*, clientes(nome)').eq('id', id).single();
+  if (!p) return;
+  const dataHoje = new Date(p.criado_em).toLocaleDateString('pt-BR');
+  document.getElementById('prop-preview-content').innerHTML = `
+    <h2>Bartras Consulting</h2>
+    <p>Curitiba, PR · CNPJ ativo · contato@bartras.com.br</p>
+    <div class="prop-line"></div>
+    <h3>Proposta Comercial</h3>
+    <p><strong style="color:var(--white)">Cliente:</strong> ${p.clientes?.nome||'—'}</p>
+    <p><strong style="color:var(--white)">Data:</strong> ${dataHoje}</p>
+    <div class="prop-line"></div>
+    <h3>Serviço</h3><p>${p.servico||'—'}</p>${p.observacoes?`<p style="margin-top:0.5rem">${p.observacoes}</p>`:''}
+    <div class="prop-line"></div>
+    <h3>Investimento</h3>
+    <p><strong style="color:var(--teal);font-size:1.1rem">${fmt(p.valor)}</strong></p>
+    ${p.prazo?`<p style="margin-top:0.3rem">Prazo estimado: ${p.prazo}</p>`:''}
+    <div class="prop-line"></div>
+    <h3>Condições</h3>
+    <p>• 50% na assinatura do contrato</p><p>• 50% na entrega final</p>
+    <p>• Garantia de 30 dias pós-entrega</p><p>• Proposta válida por 15 dias</p>
+    <div class="prop-line"></div>
+    <p style="font-size:0.68rem;color:var(--text-dim)">Bartras Consulting · Curitiba, PR · ${dataHoje}</p>`;
+  document.getElementById('modal-prop-preview').classList.add('open');
+};
+
 async function renderPropostas() {
   const el = document.getElementById('tabela-propostas');
   el.innerHTML = '<div class="loading">carregando...</div>';
   const { data } = await sb.from('propostas').select('*, clientes(nome)').order('criado_em', { ascending: false });
   if (!(data||[]).length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">📄</div>Nenhuma proposta gerada</div>'; return; }
-  el.innerHTML = '<table><thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Valor</th></tr></thead><tbody>' +
-    data.map(p=>`<tr><td>${p.criado_em?.slice(0,10)||'—'}</td><td>${p.clientes?.nome||'—'}</td><td>${p.servico||'—'}</td><td>${fmt(p.valor)}</td></tr>`).join('') + '</tbody></table>';
+  el.innerHTML = '<table><thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Valor</th><th></th></tr></thead><tbody>' +
+    data.map(p=>`<tr><td>${p.criado_em?.slice(0,10)||'—'}</td><td>${p.clientes?.nome||'—'}</td><td>${p.servico||'—'}</td><td>${fmt(p.valor)}</td><td><div class="td-actions"><button class="btn-sm" onclick='visualizarProposta("${p.id}")'>ver</button><button class="btn-sm" onclick='editarRegistro("modal-proposta","propostas","${p.id}")'>editar</button><button class="btn-sm del" onclick='deletar("propostas","${p.id}","propostas")'>excluir</button></div></td></tr>`).join('') + '</tbody></table>';
 }
 
 // ── EDITAR ──
