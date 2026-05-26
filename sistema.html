@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bartras System</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
       --bg: #0b0e10; --bg2: #111518; --bg3: #161b1f; --bg4: #1c2227;
@@ -132,6 +133,29 @@
     /* TOAST */
     #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--bg3); border: 1px solid var(--border2); color: var(--teal); font-family: var(--mono); font-size: 0.72rem; padding: 10px 20px; border-radius: 4px; z-index: 9999; display: none; letter-spacing: 0.06em; }
 
+    /* CHARTS */
+    .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .chart-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 1.2rem; }
+    .chart-card-title { font-family: var(--sans); font-size: 0.8rem; font-weight: 700; color: var(--white); margin-bottom: 1rem; }
+    .chart-card canvas { max-height: 200px; }
+    .dre-table { width: 100%; font-size: 0.75rem; }
+    .dre-table tr td { padding: 0.5rem 0.8rem; border-bottom: 1px solid rgba(93,202,165,0.05); }
+    .dre-table tr td:last-child { text-align: right; font-weight: 500; }
+    .dre-table .dre-total td { border-top: 1px solid var(--border2); color: var(--white); font-family: var(--sans); font-weight: 700; }
+    .dre-table .dre-pos { color: var(--teal); }
+    .dre-table .dre-neg { color: var(--red); }
+    .indicator-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 0.8rem; margin-bottom: 1rem; }
+    .indicator-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; padding: 1rem; text-align: center; }
+    .indicator-val { font-family: var(--sans); font-size: 1.3rem; font-weight: 700; color: var(--teal); }
+    .indicator-label { font-size: 0.62rem; color: var(--text-dim); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 4px; }
+    .fin-tabs { display: flex; gap: 0; margin-bottom: 1rem; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+    .fin-tab { flex: 1; padding: 8px; background: none; border: none; font-family: var(--mono); font-size: 0.7rem; color: var(--text-muted); cursor: pointer; letter-spacing: 0.06em; transition: background 0.15s, color 0.15s; }
+    .fin-tab.active { background: var(--teal-dim); color: var(--teal); }
+    .fin-tab:not(:last-child) { border-right: 1px solid var(--border); }
+    .fin-section { display: none; }
+    .fin-section.active { display: block; }
+    @media (max-width: 900px) { .chart-grid, .chart-grid-3 { grid-template-columns: 1fr; } }
     @media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } .kanban-board { grid-template-columns: 1fr 1fr; } .fin-summary { grid-template-columns: 1fr; } }
     @media (max-width: 600px) { #sidebar { display: none; } .kanban-board { grid-template-columns: 1fr; } }
   </style>
@@ -179,6 +203,27 @@
         <div class="kpi-card green"><div class="kpi-label">Receita do mês</div><div class="kpi-val" id="kpi-receita">—</div><div class="kpi-sub">entradas registradas</div></div>
         <div class="kpi-card red"><div class="kpi-label">Despesas do mês</div><div class="kpi-val" id="kpi-despesas">—</div><div class="kpi-sub">saídas registradas</div></div>
       </div>
+
+      <!-- Indicadores -->
+      <div class="indicator-grid">
+        <div class="indicator-card"><div class="indicator-val" id="ind-margem">—</div><div class="indicator-label">Margem líquida</div></div>
+        <div class="indicator-card"><div class="indicator-val" id="ind-ticket">—</div><div class="indicator-label">Ticket médio</div></div>
+        <div class="indicator-card"><div class="indicator-val" id="ind-saldo">—</div><div class="indicator-label">Saldo acumulado</div></div>
+        <div class="indicator-card"><div class="indicator-val" id="ind-proj-conc">—</div><div class="indicator-label">Proj. concluídos</div></div>
+      </div>
+
+      <!-- Gráficos -->
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-card-title">Receita vs Despesas — últimos 6 meses</div>
+          <canvas id="chart-receita-despesas"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-card-title">Receita por categoria</div>
+          <canvas id="chart-categoria"></canvas>
+        </div>
+      </div>
+
       <div class="dash-grid">
         <div class="section-card">
           <div class="section-card-header"><div class="section-card-title">Projetos recentes</div></div>
@@ -224,9 +269,64 @@
         <div class="kpi-card red"><div class="kpi-label">Total saídas</div><div class="kpi-val" id="fin-saidas">—</div></div>
         <div class="kpi-card teal"><div class="kpi-label">Saldo</div><div class="kpi-val" id="fin-saldo">—</div></div>
       </div>
-      <div class="section-card">
-        <div class="section-card-header"><div class="section-card-title">Movimentações</div></div>
-        <div id="tabela-financeiro"><div class="loading">carregando...</div></div>
+
+      <div class="fin-tabs">
+        <button class="fin-tab active" onclick="finTab('movs',this)">Movimentações</button>
+        <button class="fin-tab" onclick="finTab('dre',this)">DRE</button>
+        <button class="fin-tab" onclick="finTab('fluxo',this)">Fluxo de Caixa</button>
+        <button class="fin-tab" onclick="finTab('categorias',this)">Por Categoria</button>
+      </div>
+
+      <!-- Movimentações -->
+      <div class="fin-section active" id="fin-movs">
+        <div class="section-card">
+          <div class="section-card-header"><div class="section-card-title">Todas as movimentações</div></div>
+          <div id="tabela-financeiro"><div class="loading">carregando...</div></div>
+        </div>
+      </div>
+
+      <!-- DRE -->
+      <div class="fin-section" id="fin-dre">
+        <div class="chart-grid">
+          <div class="section-card" style="padding:1.2rem">
+            <div class="section-card-title" style="margin-bottom:1rem">Demonstração de Resultado (DRE)</div>
+            <table class="dre-table" id="dre-table"></table>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card-title">Resultado mensal</div>
+            <canvas id="chart-dre"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fluxo de Caixa -->
+      <div class="fin-section" id="fin-fluxo">
+        <div class="chart-card" style="margin-bottom:1rem">
+          <div class="chart-card-title">Fluxo de Caixa — saldo acumulado</div>
+          <canvas id="chart-fluxo"></canvas>
+        </div>
+        <div class="section-card">
+          <div class="section-card-header"><div class="section-card-title">Evolução mês a mês</div></div>
+          <div id="tabela-fluxo"></div>
+        </div>
+      </div>
+
+      <!-- Por Categoria -->
+      <div class="fin-section" id="fin-categorias">
+        <div class="chart-grid">
+          <div class="chart-card">
+            <div class="chart-card-title">Entradas por categoria</div>
+            <canvas id="chart-cat-entrada"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card-title">Saídas por categoria</div>
+            <canvas id="chart-cat-saida"></canvas>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-header"><div class="section-card-title">Detalhamento por categoria</div></div>
+          <div id="tabela-categorias"></div>
+        </div>
       </div>
     </div>
 
@@ -484,24 +584,102 @@ async function popularSelect(selId, tabela, campo) {
   });
 }
 
+// ── CHART HELPERS ──
+const CHART_DEFAULTS = {
+  color: '#5dcaa5', colorRed: '#e05a5a', colorYellow: '#d4a84b',
+  grid: 'rgba(93,202,165,0.06)', font: "'DM Mono', monospace",
+  textMuted: '#6a8a7e', textDim: '#334a42'
+};
+let chartInstances = {};
+function destroyChart(id) { if (chartInstances[id]) { chartInstances[id].destroy(); delete chartInstances[id]; } }
+
+function last6Months() {
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(); d.setDate(1); d.setMonth(d.getMonth() - i);
+    months.push(d.toISOString().slice(0, 7));
+  }
+  return months;
+}
+
+function monthLabel(ym) {
+  const [y, m] = ym.split('-');
+  return ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][parseInt(m)-1] + '/' + y.slice(2);
+}
+
+function baseChartOpts(type) {
+  return {
+    type,
+    options: {
+      responsive: true, maintainAspectRatio: true,
+      plugins: { legend: { labels: { color: CHART_DEFAULTS.textMuted, font: { family: CHART_DEFAULTS.font, size: 10 }, boxWidth: 10 } } },
+      scales: type !== 'doughnut' && type !== 'pie' ? {
+        x: { grid: { color: CHART_DEFAULTS.grid }, ticks: { color: CHART_DEFAULTS.textMuted, font: { family: CHART_DEFAULTS.font, size: 10 } } },
+        y: { grid: { color: CHART_DEFAULTS.grid }, ticks: { color: CHART_DEFAULTS.textMuted, font: { family: CHART_DEFAULTS.font, size: 10 }, callback: v => 'R$' + (v/1000).toFixed(0) + 'k' } }
+      } : {}
+    }
+  };
+}
+
 // ── DASHBOARD ──
 async function renderDashboard() {
-  const [{ count: nCli }, { data: proj }, { data: movs }] = await Promise.all([
+  const [{ count: nCli }, { data: proj }, { data: movs }, { data: movMes }] = await Promise.all([
     sb.from('clientes').select('*', { count: 'exact', head: true }),
     sb.from('projetos').select('status,valor,nome,criado_em').order('criado_em', { ascending: false }).limit(5),
-    sb.from('movimentacoes').select('tipo,valor,descricao,data').order('criado_em', { ascending: false }).limit(5),
+    sb.from('movimentacoes').select('tipo,valor,descricao,data,categoria').order('criado_em', { ascending: false }),
+    sb.from('movimentacoes').select('tipo,valor').gte('data', mesAtual() + '-01'),
   ]);
 
-  const { data: movMes } = await sb.from('movimentacoes').select('tipo,valor').gte('data', mesAtual() + '-01');
   const andamento = (proj||[]).filter(p => p.status === 'andamento').length;
-  const entradas = (movMes||[]).filter(m=>m.tipo==='entrada').reduce((a,m)=>a+Number(m.valor),0);
-  const saidas   = (movMes||[]).filter(m=>m.tipo==='saida').reduce((a,m)=>a+Number(m.valor),0);
+  const concluido = (proj||[]).filter(p => p.status === 'concluido').length;
+  const entMes = (movMes||[]).filter(m=>m.tipo==='entrada').reduce((a,m)=>a+Number(m.valor),0);
+  const saiMes = (movMes||[]).filter(m=>m.tipo==='saida').reduce((a,m)=>a+Number(m.valor),0);
+  const totalEnt = (movs||[]).filter(m=>m.tipo==='entrada').reduce((a,m)=>a+Number(m.valor),0);
+  const totalSai = (movs||[]).filter(m=>m.tipo==='saida').reduce((a,m)=>a+Number(m.valor),0);
+  const margem = totalEnt > 0 ? ((totalEnt - totalSai) / totalEnt * 100).toFixed(1) + '%' : '—';
+  const projComValor = (proj||[]).filter(p=>p.valor>0);
+  const ticket = projComValor.length ? fmt(projComValor.reduce((a,p)=>a+Number(p.valor),0)/projComValor.length) : '—';
 
   document.getElementById('kpi-clientes').textContent = nCli || 0;
   document.getElementById('kpi-projetos').textContent = andamento;
-  document.getElementById('kpi-receita').textContent = fmt(entradas);
-  document.getElementById('kpi-despesas').textContent = fmt(saidas);
+  document.getElementById('kpi-receita').textContent = fmt(entMes);
+  document.getElementById('kpi-despesas').textContent = fmt(saiMes);
+  document.getElementById('ind-margem').textContent = margem;
+  document.getElementById('ind-ticket').textContent = ticket;
+  document.getElementById('ind-saldo').textContent = fmt(totalEnt - totalSai);
+  document.getElementById('ind-proj-conc').textContent = concluido;
 
+  // Gráfico receita vs despesas 6 meses
+  const months = last6Months();
+  const entPorMes = months.map(m => (movs||[]).filter(x=>x.tipo==='entrada'&&(x.data||'').startsWith(m)).reduce((a,x)=>a+Number(x.valor),0));
+  const saiPorMes = months.map(m => (movs||[]).filter(x=>x.tipo==='saida'&&(x.data||'').startsWith(m)).reduce((a,x)=>a+Number(x.valor),0));
+  destroyChart('chart-receita-despesas');
+  const opts1 = baseChartOpts('bar');
+  chartInstances['chart-receita-despesas'] = new Chart(document.getElementById('chart-receita-despesas'), {
+    ...opts1,
+    data: {
+      labels: months.map(monthLabel),
+      datasets: [
+        { label: 'Receita', data: entPorMes, backgroundColor: 'rgba(93,202,165,0.7)', borderRadius: 3 },
+        { label: 'Despesas', data: saiPorMes, backgroundColor: 'rgba(224,90,90,0.6)', borderRadius: 3 }
+      ]
+    },
+    options: opts1.options
+  });
+
+  // Gráfico receita por categoria
+  const catMap = {};
+  (movs||[]).filter(m=>m.tipo==='entrada').forEach(m => { catMap[m.categoria||'Outros'] = (catMap[m.categoria||'Outros']||0) + Number(m.valor); });
+  const catKeys = Object.keys(catMap);
+  const palette = ['#5dcaa5','#d4a84b','#7eb8d4','#b07dd4','#e05a5a','#5a9ee0'];
+  destroyChart('chart-categoria');
+  chartInstances['chart-categoria'] = new Chart(document.getElementById('chart-categoria'), {
+    type: 'doughnut',
+    data: { labels: catKeys.length ? catKeys : ['Sem dados'], datasets: [{ data: catKeys.length ? catKeys.map(k=>catMap[k]) : [1], backgroundColor: catKeys.length ? palette.slice(0,catKeys.length) : ['#334a42'], borderWidth: 0 }] },
+    options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: CHART_DEFAULTS.textMuted, font: { family: CHART_DEFAULTS.font, size: 10 }, boxWidth: 10 } } } }
+  });
+
+  // Tabelas
   const pEl = document.getElementById('dash-projetos');
   if (!(proj||[]).length) { pEl.innerHTML = '<div class="empty-state"><div class="empty-icon">🗂️</div>Nenhum projeto ainda</div>'; }
   else pEl.innerHTML = '<table><thead><tr><th>Projeto</th><th>Status</th><th>Valor</th></tr></thead><tbody>' +
@@ -510,7 +688,7 @@ async function renderDashboard() {
   const fEl = document.getElementById('dash-movs');
   if (!(movs||[]).length) { fEl.innerHTML = '<div class="empty-state"><div class="empty-icon">💰</div>Nenhuma movimentação ainda</div>'; }
   else fEl.innerHTML = '<table><thead><tr><th>Descrição</th><th>Tipo</th><th>Valor</th></tr></thead><tbody>' +
-    movs.map(m=>`<tr><td>${m.descricao}</td><td>${m.tipo==='entrada'?'<span class="badge badge-green">ENTRADA</span>':'<span class="badge badge-red">SAÍDA</span>'}</td><td>${fmt(m.valor)}</td></tr>`).join('') + '</tbody></table>';
+    movs.slice(0,5).map(m=>`<tr><td>${m.descricao}</td><td>${m.tipo==='entrada'?'<span class="badge badge-green">ENTRADA</span>':'<span class="badge badge-red">SAÍDA</span>'}</td><td>${fmt(m.valor)}</td></tr>`).join('') + '</tbody></table>';
 }
 
 // ── CLIENTES ──
@@ -596,6 +774,17 @@ window.salvarMovimentacao = async () => {
   renderFinanceiro();
 };
 
+// ── FIN TABS ──
+window.finTab = (tab, el) => {
+  document.querySelectorAll('.fin-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.fin-section').forEach(s => s.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('fin-' + tab).classList.add('active');
+  if (tab === 'dre') renderDRE();
+  if (tab === 'fluxo') renderFluxo();
+  if (tab === 'categorias') renderCategorias();
+};
+
 async function renderFinanceiro() {
   const el = document.getElementById('tabela-financeiro');
   el.innerHTML = '<div class="loading">carregando...</div>';
@@ -608,6 +797,104 @@ async function renderFinanceiro() {
   if (!(data||[]).length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">💰</div>Nenhuma movimentação registrada</div>'; return; }
   el.innerHTML = '<table><thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Tipo</th><th>Valor</th><th></th></tr></thead><tbody>' +
     data.map(m=>`<tr><td>${m.data||'—'}</td><td>${m.descricao}</td><td>${m.categoria||'—'}</td><td>${m.tipo==='entrada'?'<span class="badge badge-green">ENTRADA</span>':'<span class="badge badge-red">SAÍDA</span>'}</td><td style="color:${m.tipo==='entrada'?'var(--teal)':'var(--red)'}">${fmt(m.valor)}</td><td><div class="td-actions"><button class="btn-sm" onclick='editarRegistro("modal-fin","movimentacoes","${m.id}")'>editar</button><button class="btn-sm del" onclick='deletar("movimentacoes","${m.id}","financeiro")'>excluir</button></div></td></tr>`).join('') + '</tbody></table>';
+}
+
+async function renderDRE() {
+  const { data } = await sb.from('movimentacoes').select('tipo,valor,categoria,data');
+  const mes = mesAtual();
+  const movMes = (data||[]).filter(m => (m.data||'').startsWith(mes));
+  const receita = movMes.filter(m=>m.tipo==='entrada').reduce((a,m)=>a+Number(m.valor),0);
+  const despesas = movMes.filter(m=>m.tipo==='saida').reduce((a,m)=>a+Number(m.valor),0);
+  const lucro = receita - despesas;
+  const margem = receita > 0 ? (lucro/receita*100).toFixed(1) : 0;
+
+  // Por categoria de despesa
+  const catDespesas = {};
+  movMes.filter(m=>m.tipo==='saida').forEach(m => { catDespesas[m.categoria||'Outros'] = (catDespesas[m.categoria||'Outros']||0)+Number(m.valor); });
+
+  document.getElementById('dre-table').innerHTML = `
+    <tr><td style="color:var(--text-muted);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase" colspan="2">Mês atual: ${monthLabel(mes)}</td></tr>
+    <tr><td style="color:var(--white)">Receita bruta</td><td class="dre-pos">${fmt(receita)}</td></tr>
+    ${Object.entries(catDespesas).map(([k,v])=>`<tr><td style="padding-left:1.5rem;color:var(--text-muted)">(–) ${k}</td><td class="dre-neg">–${fmt(v)}</td></tr>`).join('')}
+    <tr class="dre-total"><td>Lucro líquido</td><td class="${lucro>=0?'dre-pos':'dre-neg'}">${fmt(lucro)}</td></tr>
+    <tr><td style="color:var(--text-muted)">Margem líquida</td><td style="text-align:right;color:${margem>=0?'var(--teal)':'var(--red)'}">${margem}%</td></tr>
+  `;
+
+  // Gráfico DRE mensal
+  const months = last6Months();
+  const lucroMes = months.map(m => {
+    const ent = (data||[]).filter(x=>x.tipo==='entrada'&&(x.data||'').startsWith(m)).reduce((a,x)=>a+Number(x.valor),0);
+    const sai = (data||[]).filter(x=>x.tipo==='saida'&&(x.data||'').startsWith(m)).reduce((a,x)=>a+Number(x.valor),0);
+    return ent - sai;
+  });
+  destroyChart('chart-dre');
+  const opts = baseChartOpts('bar');
+  chartInstances['chart-dre'] = new Chart(document.getElementById('chart-dre'), {
+    type: 'bar',
+    data: { labels: months.map(monthLabel), datasets: [{ label: 'Resultado', data: lucroMes, backgroundColor: lucroMes.map(v=>v>=0?'rgba(93,202,165,0.7)':'rgba(224,90,90,0.6)'), borderRadius: 3 }] },
+    options: opts.options
+  });
+}
+
+async function renderFluxo() {
+  const { data } = await sb.from('movimentacoes').select('tipo,valor,data').order('data');
+  const months = last6Months();
+  let saldo = 0;
+  const saldos = months.map(m => {
+    const ent = (data||[]).filter(x=>x.tipo==='entrada'&&(x.data||'').startsWith(m)).reduce((a,x)=>a+Number(x.valor),0);
+    const sai = (data||[]).filter(x=>x.tipo==='saida'&&(x.data||'').startsWith(m)).reduce((a,x)=>a+Number(x.valor),0);
+    saldo += ent - sai;
+    return saldo;
+  });
+
+  destroyChart('chart-fluxo');
+  chartInstances['chart-fluxo'] = new Chart(document.getElementById('chart-fluxo'), {
+    type: 'line',
+    data: { labels: months.map(monthLabel), datasets: [{ label: 'Saldo acumulado', data: saldos, borderColor: '#5dcaa5', backgroundColor: 'rgba(93,202,165,0.08)', tension: 0.4, fill: true, pointBackgroundColor: '#5dcaa5' }] },
+    options: { ...baseChartOpts('line').options }
+  });
+
+  // Tabela fluxo
+  let saldoAcum = 0;
+  const rows = months.map(m => {
+    const ent = (data||[]).filter(x=>x.tipo==='entrada'&&(x.data||'').startsWith(m)).reduce((a,x)=>a+Number(x.valor),0);
+    const sai = (data||[]).filter(x=>x.tipo==='saida'&&(x.data||'').startsWith(m)).reduce((a,x)=>a+Number(x.valor),0);
+    const res = ent - sai;
+    saldoAcum += res;
+    return `<tr><td>${monthLabel(m)}</td><td style="color:var(--teal)">${fmt(ent)}</td><td style="color:var(--red)">${fmt(sai)}</td><td style="color:${res>=0?'var(--teal)':'var(--red)'}">${fmt(res)}</td><td style="color:var(--white)">${fmt(saldoAcum)}</td></tr>`;
+  });
+  document.getElementById('tabela-fluxo').innerHTML = '<table><thead><tr><th>Mês</th><th>Entradas</th><th>Saídas</th><th>Resultado</th><th>Saldo acum.</th></tr></thead><tbody>' + rows.join('') + '</tbody></table>';
+}
+
+async function renderCategorias() {
+  const { data } = await sb.from('movimentacoes').select('tipo,valor,categoria');
+  const palette = ['#5dcaa5','#d4a84b','#7eb8d4','#b07dd4','#e05a5a','#5a9ee0'];
+
+  const catEnt = {}, catSai = {};
+  (data||[]).forEach(m => {
+    const cat = m.categoria || 'Outros';
+    if (m.tipo==='entrada') catEnt[cat] = (catEnt[cat]||0)+Number(m.valor);
+    else catSai[cat] = (catSai[cat]||0)+Number(m.valor);
+  });
+
+  const makeDonut = (id, map) => {
+    const keys = Object.keys(map);
+    destroyChart(id);
+    chartInstances[id] = new Chart(document.getElementById(id), {
+      type: 'doughnut',
+      data: { labels: keys.length?keys:['Sem dados'], datasets: [{ data: keys.length?keys.map(k=>map[k]):[1], backgroundColor: keys.length?palette.slice(0,keys.length):['#334a42'], borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#6a8a7e', font: { family: "'DM Mono',monospace", size: 10 }, boxWidth: 10 } } } }
+    });
+  };
+  makeDonut('chart-cat-entrada', catEnt);
+  makeDonut('chart-cat-saida', catSai);
+
+  const allCats = [...new Set([...Object.keys(catEnt),...Object.keys(catSai)])];
+  document.getElementById('tabela-categorias').innerHTML = '<table><thead><tr><th>Categoria</th><th>Entradas</th><th>Saídas</th><th>Saldo</th></tr></thead><tbody>' +
+    allCats.map(c => {
+      const e = catEnt[c]||0, s = catSai[c]||0;
+      return `<tr><td>${c}</td><td style="color:var(--teal)">${fmt(e)}</td><td style="color:var(--red)">${fmt(s)}</td><td style="color:${e-s>=0?'var(--teal)':'var(--red)'}">${fmt(e-s)}</td></tr>`;
+    }).join('') + '</tbody></table>';
 }
 
 // ── PROPOSTAS ──
