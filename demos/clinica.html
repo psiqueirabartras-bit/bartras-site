@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clínica Saúde Plena — Medicina de Família em Curitiba</title>
+  <meta name="description" content="Cuidado médico humanizado para toda a família. Agendamento online, atendimento rápido e equipe especializada em Curitiba-PR." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --cream: #faf6f1;
+      --cream2: #f3ece2;
+      --cream3: #ede3d5;
+      --rust: #c1622a;
+      --rust-light: #e8845a;
+      --rust-dim: rgba(193,98,42,0.10);
+      --rust-glow: rgba(193,98,42,0.20);
+      --sage: #6b8f71;
+      --sage-light: #e8f0e9;
+      --brown: #3d2b1f;
+      --brown-mid: #7a5c48;
+      --brown-light: #b89880;
+      --text: #2d1f14;
+      --text-muted: #7a5c48;
+      --text-dim: #b89880;
+      --white: #fffdf9;
+      --serif: 'Fraunces', serif;
+      --sans: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--cream);
+      color: var(--text);
+      font-family: var(--sans);
+      overflow-x: hidden;
+    }
+
+    /* ── DEMO BADGE ── */
+    .demo-banner {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 9999;
+      background: var(--brown);
+      color: var(--cream2);
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-align: center;
+      padding: 7px 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .demo-banner strong { color: #f0c890; }
+    .demo-banner a {
+      color: #f0c890;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 34px; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5vw;
+      height: 68px;
+      background: rgba(250,246,241,0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(193,98,42,0.10);
+    }
+
+    .nav-logo {
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+    }
+    .nav-logo-name {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--brown);
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+    }
+    .nav-logo-sub {
+      font-size: 0.62rem;
+      color: var(--brown-light);
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--rust); }
+
+    .nav-cta {
+      background: var(--rust);
+      color: var(--white);
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 10px 22px;
+      border-radius: 40px;
+      text-decoration: none;
+      letter-spacing: 0.02em;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .nav-cta:hover { background: var(--rust-light); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      padding: 102px 5vw 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg-shape {
+      position: absolute;
+      right: -60px; top: 60px;
+      width: 55vw; height: 80vh;
+      background: var(--cream2);
+      border-radius: 40% 60% 60% 40% / 40% 40% 60% 60%;
+      z-index: 0;
+    }
+
+    .hero-content { position: relative; z-index: 2; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 0.72rem;
+      color: var(--rust);
+      background: var(--rust-dim);
+      border: 1px solid rgba(193,98,42,0.18);
+      padding: 5px 14px;
+      border-radius: 40px;
+      letter-spacing: 0.06em;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.7s ease both;
+    }
+    .hero-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--rust);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .hero-title {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(2.6rem, 4.5vw, 4rem);
+      line-height: 1.12;
+      letter-spacing: -0.02em;
+      color: var(--brown);
+      margin-bottom: 1.5rem;
+      animation: fadeUp 0.7s 0.1s ease both;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--rust);
+    }
+
+    .hero-sub {
+      font-size: 1rem;
+      color: var(--text-muted);
+      line-height: 1.75;
+      max-width: 440px;
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.7s 0.2s ease both;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      animation: fadeUp 0.7s 0.3s ease both;
+    }
+
+    .btn-primary {
+      background: var(--rust);
+      color: var(--white);
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 14px 30px;
+      border-radius: 40px;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { background: var(--rust-light); transform: translateY(-2px); }
+
+    .btn-secondary {
+      color: var(--brown);
+      font-size: 0.85rem;
+      padding: 14px 24px;
+      border-radius: 40px;
+      border: 1.5px solid var(--cream3);
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--rust); color: var(--rust); }
+
+    .hero-image-wrap {
+      position: relative;
+      z-index: 2;
+      animation: fadeUp 0.7s 0.25s ease both;
+    }
+
+    .hero-img-card {
+      background: var(--cream2);
+      border-radius: 24px 24px 80px 24px;
+      overflow: hidden;
+      aspect-ratio: 4/5;
+      position: relative;
+    }
+
+    .hero-img-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--cream3) 0%, #d4b99a 50%, #c4a07e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-img-svg {
+      width: 60%;
+      opacity: 0.35;
+    }
+
+    .hero-float-card {
+      position: absolute;
+      bottom: 2rem;
+      left: -2rem;
+      background: var(--white);
+      border-radius: 16px;
+      padding: 1rem 1.2rem;
+      box-shadow: 0 8px 32px rgba(61,43,31,0.12);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 200px;
+    }
+    .float-icon {
+      width: 40px; height: 40px;
+      background: var(--sage-light);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .float-text strong {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--brown);
+    }
+    .float-text span {
+      font-size: 0.7rem;
+      color: var(--text-dim);
+    }
+
+    .hero-trust-strip {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 3rem;
+      padding: 2.5rem 0 3rem;
+      border-top: 1px solid var(--cream3);
+      animation: fadeUp 0.7s 0.4s ease both;
+      flex-wrap: wrap;
+    }
+    .trust-item { display: flex; align-items: center; gap: 10px; }
+    .trust-num {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      font-weight: 400;
+      color: var(--rust);
+      line-height: 1;
+    }
+    .trust-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      max-width: 80px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SECTIONS SHARED ── */
+    section {
+      padding: 100px 5vw;
+      position: relative;
+    }
+
+    .section-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.68rem;
+      color: var(--rust);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .section-eyebrow::before {
+      content: '';
+      width: 28px; height: 1.5px;
+      background: var(--rust);
+      opacity: 0.5;
+    }
+
+    .section-title {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(1.9rem, 3vw, 2.8rem);
+      color: var(--brown);
+      line-height: 1.18;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.2rem;
+    }
+
+    .section-body {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+      max-width: 480px;
+    }
+
+    /* ── ESPECIALIDADES ── */
+    #especialidades { background: var(--white); }
+
+    .esp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5px;
+      background: var(--cream3);
+      border: 1.5px solid var(--cream3);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 4rem;
+    }
+
+    .esp-card {
+      background: var(--white);
+      padding: 2.2rem 1.8rem;
+      transition: background 0.2s;
+      position: relative;
+    }
+    .esp-card:hover { background: var(--cream); }
+
+    .esp-icon {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .esp-name {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--brown);
+      margin-bottom: 0.5rem;
+    }
+    .esp-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* ── COMO FUNCIONA ── */
+    #como-funciona { background: var(--cream2); }
+
+    .steps-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .steps-list { display: flex; flex-direction: column; gap: 2rem; margin-top: 3rem; }
+
+    .step-item {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--rust-dim);
+      border: 1.5px solid rgba(193,98,42,0.20);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--serif);
+      font-size: 0.9rem;
+      color: var(--rust);
+      flex-shrink: 0;
+    }
+
+    .step-text strong {
+      display: block;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--brown);
+      margin-bottom: 4px;
+    }
+    .step-text span {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .steps-visual {
+      background: var(--white);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 4px 24px rgba(61,43,31,0.07);
+    }
+
+    .phone-mockup {
+      background: var(--brown);
+      border-radius: 28px;
+      padding: 1rem;
+      max-width: 260px;
+      margin: 0 auto;
+    }
+    .phone-screen {
+      background: var(--cream);
+      border-radius: 20px;
+      padding: 1rem;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .phone-header {
+      background: var(--rust);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: var(--white);
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .chat-msg {
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      line-height: 1.5;
+      max-width: 85%;
+    }
+    .chat-msg.bot {
+      background: var(--white);
+      color: var(--text);
+      border-bottom-left-radius: 4px;
+      border: 1px solid var(--cream3);
+    }
+    .chat-msg.user {
+      background: var(--rust);
+      color: var(--white);
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .chat-opts {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-top: 4px;
+    }
+    .chat-opt {
+      background: var(--white);
+      border: 1px solid rgba(193,98,42,0.2);
+      color: var(--rust);
+      font-size: 0.65rem;
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    /* ── EQUIPE ── */
+    #equipe { background: var(--white); }
+
+    .equipe-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-top: 4rem;
+    }
+
+    .medico-card {
+      background: var(--cream);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+    .medico-card:hover { transform: translateY(-4px); }
+
+    .medico-foto {
+      height: 200px;
+      background: linear-gradient(160deg, var(--cream3), #c8a888);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3rem;
+    }
+    .medico-info { padding: 1.2rem; }
+    .medico-nome {
+      font-family: var(--serif);
+      font-size: 1rem;
+      color: var(--brown);
+      margin-bottom: 2px;
+    }
+    .medico-crm {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .medico-esp {
+      font-size: 0.72rem;
+      color: var(--rust);
+      background: var(--rust-dim);
+      padding: 3px 10px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+
+    /* ── DEPOIMENTOS ── */
+    #depoimentos { background: var(--cream2); }
+
+    .dep-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .dep-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 1.8rem;
+      position: relative;
+    }
+    .dep-stars { color: #e8845a; font-size: 0.8rem; margin-bottom: 1rem; letter-spacing: 2px; }
+    .dep-text {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--brown);
+      line-height: 1.7;
+      margin-bottom: 1.2rem;
+    }
+    .dep-autor { display: flex; align-items: center; gap: 10px; }
+    .dep-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--cream3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    .dep-nome { font-size: 0.78rem; font-weight: 600; color: var(--brown); }
+    .dep-info { font-size: 0.68rem; color: var(--text-dim); }
+
+    /* ── AGENDAMENTO ── */
+    #agendar {
+      background: var(--brown);
+      color: var(--cream);
+    }
+
+    .agendar-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .agendar-info .section-eyebrow { color: #d4a87a; }
+    .agendar-info .section-eyebrow::before { background: #d4a87a; }
+    .agendar-info .section-title { color: var(--cream); }
+    .agendar-info .section-body { color: var(--brown-light); }
+
+    .contact-items { display: flex; flex-direction: column; gap: 1.2rem; margin-top: 2rem; }
+    .contact-item { display: flex; align-items: center; gap: 12px; }
+    .ci-icon {
+      width: 40px; height: 40px;
+      background: rgba(250,246,241,0.08);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .ci-text strong { display: block; font-size: 0.78rem; color: var(--cream2); }
+    .ci-text span { font-size: 0.72rem; color: var(--brown-light); }
+
+    .agendar-form { display: flex; flex-direction: column; gap: 1rem; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label {
+      font-size: 0.65rem;
+      color: var(--brown-light);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: rgba(250,246,241,0.07);
+      border: 1px solid rgba(250,246,241,0.12);
+      color: var(--cream);
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      padding: 12px 14px;
+      border-radius: 10px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      resize: vertical;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: rgba(193,98,42,0.5); }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: rgba(184,152,128,0.5); }
+    .form-group select option { background: var(--brown); }
+
+    .form-submit {
+      background: var(--rust);
+      color: var(--white);
+      font-family: var(--sans);
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 14px;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 0.5rem;
+    }
+    .form-submit:hover { background: var(--rust-light); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: #251510;
+      padding: 2rem 5vw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo {
+      font-family: var(--serif);
+      font-size: 0.95rem;
+      color: var(--brown-light);
+    }
+    .footer-info {
+      font-size: 0.65rem;
+      color: #6a4030;
+      text-align: right;
+      line-height: 1.6;
+    }
+
+    /* ── CHATBOT ── */
+    #cb-toggle {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: var(--rust);
+      border: none;
+      cursor: pointer;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 24px rgba(193,98,42,0.40);
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    #cb-toggle:hover { transform: scale(1.08); opacity: 0.92; }
+    #cb-toggle svg { width: 24px; height: 24px; fill: #fff; }
+
+    #cb-box {
+      position: fixed;
+      bottom: 96px; right: 28px;
+      width: 330px;
+      max-height: 500px;
+      background: var(--white);
+      border: 1px solid var(--cream3);
+      border-radius: 20px;
+      display: none;
+      flex-direction: column;
+      z-index: 998;
+      box-shadow: 0 12px 48px rgba(61,43,31,0.18);
+      overflow: hidden;
+      font-family: var(--sans);
+    }
+    #cb-box.open { display: flex; }
+
+    #cb-header {
+      background: var(--rust);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cb-avatar {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .cb-info strong { display: block; font-size: 0.82rem; color: #fff; }
+    .cb-info span { font-size: 0.62rem; color: rgba(255,255,255,0.75); }
+    #cb-close {
+      margin-left: auto; background: none; border: none;
+      color: rgba(255,255,255,0.7); font-size: 1.1rem; cursor: pointer;
+    }
+    #cb-close:hover { color: #fff; }
+
+    #cb-messages {
+      flex: 1; overflow-y: auto; padding: 14px;
+      display: flex; flex-direction: column; gap: 8px;
+      scrollbar-width: thin;
+    }
+
+    .cb-msg {
+      max-width: 88%; font-size: 0.78rem; line-height: 1.6;
+      padding: 9px 13px; border-radius: 14px;
+      animation: cbIn 0.2s ease;
+    }
+    @keyframes cbIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    .cb-msg.bot {
+      background: var(--cream); border: 1px solid var(--cream3);
+      color: var(--text); align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .cb-msg.user {
+      background: var(--rust); color: #fff;
+      align-self: flex-end; border-bottom-right-radius: 4px;
+    }
+
+    #cb-options { padding: 8px 14px 12px; display: flex; flex-direction: column; gap: 6px; }
+    .cb-opt {
+      background: transparent; border: 1px solid rgba(193,98,42,0.25);
+      color: var(--rust); font-family: var(--sans); font-size: 0.73rem;
+      padding: 8px 12px; border-radius: 10px; cursor: pointer;
+      text-align: left; transition: background 0.15s, color 0.15s;
+    }
+    .cb-opt:hover { background: var(--rust-dim); color: var(--brown); }
+
+    #cb-input-row { padding: 8px 14px 12px; display: none; gap: 8px; }
+    #cb-input-row.show { display: flex; }
+    #cb-input {
+      flex: 1; background: var(--cream); border: 1px solid var(--cream3);
+      color: var(--text); font-family: var(--sans); font-size: 0.78rem;
+      padding: 9px 12px; border-radius: 10px; outline: none;
+    }
+    #cb-input:focus { border-color: var(--rust); }
+    #cb-send {
+      background: var(--rust); border: none; color: #fff;
+      font-family: var(--sans); font-size: 0.78rem; font-weight: 500;
+      padding: 9px 14px; border-radius: 10px; cursor: pointer;
+    }
+
+    /* ── REVEAL ── */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .demo-banner { font-size: 0.62rem; }
+      nav { padding: 0 4vw; top: 50px; }
+      .nav-links { display: none; }
+      #hero { grid-template-columns: 1fr; padding-top: 130px; }
+      .hero-image-wrap { display: none; }
+      .hero-bg-shape { display: none; }
+      .hero-trust-strip { gap: 1.5rem; }
+      .steps-layout, .agendar-layout { grid-template-columns: 1fr; gap: 2.5rem; }
+      section { padding: 70px 5vw; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- DEMO BANNER -->
+<div class="demo-banner">
+  <span>⚠ Este é um site <strong>demonstrativo</strong> criado pela Bartras Consulting.</span>
+  <a href="https://bartras-consulting.vercel.app" target="_blank">Ver como fazer para sua clínica →</a>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#hero" class="nav-logo">
+    <span class="nav-logo-name">Clínica Saúde Plena</span>
+    <span class="nav-logo-sub">Medicina de Família · Curitiba</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#especialidades">Especialidades</a></li>
+    <li><a href="#como-funciona">Como funciona</a></li>
+    <li><a href="#equipe">Equipe</a></li>
+    <li><a href="#depoimentos">Depoimentos</a></li>
+  </ul>
+  <a href="#agendar" class="nav-cta">Agendar consulta</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-shape"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Atendimento humanizado · Curitiba, PR</div>
+    <h1 class="hero-title">
+      Cuidando da<br/>
+      sua saúde com<br/>
+      <em>atenção real.</em>
+    </h1>
+    <p class="hero-sub">
+      Medicina de família para você e seus filhos. Consultas presenciais e telemedicina, agendamento online em minutos, sem fila de espera.
+    </p>
+    <div class="hero-actions">
+      <a href="#agendar" class="btn-primary">Agendar minha consulta</a>
+      <a href="#especialidades" class="btn-secondary">Ver especialidades</a>
+    </div>
+  </div>
+
+  <div class="hero-image-wrap">
+    <div class="hero-img-card">
+      <div class="hero-img-placeholder">
+        <svg class="hero-img-svg" viewBox="0 0 120 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="60" cy="45" rx="28" ry="28" fill="#8B5E42" fill-opacity="0.4"/>
+          <rect x="28" y="75" width="64" height="80" rx="18" fill="#8B5E42" fill-opacity="0.3"/>
+          <rect x="52" y="92" width="16" height="32" rx="8" fill="#8B5E42" fill-opacity="0.6"/>
+          <rect x="40" y="104" width="40" height="8" rx="4" fill="#8B5E42" fill-opacity="0.6"/>
+          <circle cx="72" cy="28" r="6" fill="#c1622a" fill-opacity="0.5"/>
+          <path d="M68 28 h8 M72 24 v8" stroke="#c1622a" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+        </svg>
+      </div>
+    </div>
+    <div class="hero-float-card">
+      <div class="float-icon">🗓️</div>
+      <div class="float-text">
+        <strong>Agendamento online</strong>
+        <span>Disponível 24h por dia</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-trust-strip">
+    <div class="trust-item">
+      <div class="trust-num">12+</div>
+      <div class="trust-label">anos de atendimento</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-num">4.800</div>
+      <div class="trust-label">pacientes ativos</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-num">98%</div>
+      <div class="trust-label">satisfação no atendimento</div>
+    </div>
+    <div class="trust-item">
+      <div class="trust-num">6</div>
+      <div class="trust-label">especialidades disponíveis</div>
+    </div>
+  </div>
+</section>
+
+<!-- ESPECIALIDADES -->
+<section id="especialidades">
+  <div class="reveal">
+    <div class="section-eyebrow">Especialidades</div>
+    <h2 class="section-title">Cuidado completo para<br/>toda a sua família</h2>
+    <p class="section-body">Da consulta de rotina ao acompanhamento especializado — você e sua família encontram tudo aqui.</p>
+  </div>
+  <div class="esp-grid reveal">
+    <div class="esp-card">
+      <span class="esp-icon">👨‍👩‍👧</span>
+      <div class="esp-name">Medicina de Família</div>
+      <p class="esp-desc">Acompanhamento longitudinal para todas as idades. Seu médico de confiança para o dia a dia e para as decisões importantes.</p>
+    </div>
+    <div class="esp-card">
+      <span class="esp-icon">🍼</span>
+      <div class="esp-name">Pediatria</div>
+      <p class="esp-desc">Consultas de rotina, vacinação e acompanhamento do desenvolvimento da criança do nascimento à adolescência.</p>
+    </div>
+    <div class="esp-card">
+      <span class="esp-icon">❤️</span>
+      <div class="esp-name">Cardiologia</div>
+      <p class="esp-desc">Eletrocardiograma, avaliação de risco cardiovascular e acompanhamento de hipertensão e outras condições cardíacas.</p>
+    </div>
+    <div class="esp-card">
+      <span class="esp-icon">🧘</span>
+      <div class="esp-name">Check-up Preventivo</div>
+      <p class="esp-desc">Exames laboratoriais e avaliação clínica completa para identificar riscos antes que se tornem problemas.</p>
+    </div>
+    <div class="esp-card">
+      <span class="esp-icon">💻</span>
+      <div class="esp-name">Telemedicina</div>
+      <p class="esp-desc">Consultas por vídeo com o mesmo padrão de qualidade. Receitas digitais e laudos com validade legal.</p>
+    </div>
+    <div class="esp-card">
+      <span class="esp-icon">🩺</span>
+      <div class="esp-name">Medicina Ocupacional</div>
+      <p class="esp-desc">Exames admissionais, demissionais e periódicos para empresas. ASO com agilidade e responsabilidade técnica.</p>
+    </div>
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section id="como-funciona">
+  <div class="steps-layout">
+    <div class="reveal">
+      <div class="section-eyebrow">Atendimento</div>
+      <h2 class="section-title">Agendar é simples<br/>como deve ser</h2>
+      <div class="steps-list">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <strong>Escolha a especialidade</strong>
+            <span>Selecione o tipo de consulta pelo site, WhatsApp ou pelo nosso assistente virtual.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <strong>Informe seus dados</strong>
+            <span>Nome, data de nascimento e contato — nada mais que isso.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <strong>Confirme pelo WhatsApp</strong>
+            <span>Você recebe a confirmação em instantes com data, horário e médico responsável.</span>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-text">
+            <strong>Apareça na clínica</strong>
+            <span>Sem fila, sem espera. Seu horário é reservado com antecedência.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps-visual reveal">
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <div class="phone-header">💬 Assistente Saúde Plena</div>
+          <div class="chat-msg bot">Olá! Bem-vindo à Clínica Saúde Plena. Como posso ajudar? 😊</div>
+          <div class="chat-opts">
+            <div class="chat-opt">📅 Agendar consulta</div>
+            <div class="chat-opt">🔬 Ver especialidades</div>
+            <div class="chat-opt">📋 Resultado de exame</div>
+          </div>
+          <div class="chat-msg user">Agendar consulta</div>
+          <div class="chat-msg bot">Qual especialidade você precisa?<br/>Pediatria, Clínica Geral ou Cardiologia?</div>
+          <div class="chat-msg user">Clínica Geral, amanhã</div>
+          <div class="chat-msg bot">✅ Horários disponíveis:<br/>🕙 09h00 · 🕑 14h30 · 🕓 16h00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EQUIPE -->
+<section id="equipe">
+  <div class="reveal">
+    <div class="section-eyebrow">Nossa equipe</div>
+    <h2 class="section-title">Médicos que se<br/>importam com você</h2>
+    <p class="section-body">Profissionais experientes, cadastrados nos conselhos regionais, comprometidos com o cuidado humano e técnico.</p>
+  </div>
+  <div class="equipe-grid reveal">
+    <div class="medico-card">
+      <div class="medico-foto">👩‍⚕️</div>
+      <div class="medico-info">
+        <div class="medico-nome">Dra. Ana Ferreira</div>
+        <div class="medico-crm">CRM-PR 54.321</div>
+        <span class="medico-esp">Medicina de Família</span>
+      </div>
+    </div>
+    <div class="medico-card">
+      <div class="medico-foto">👨‍⚕️</div>
+      <div class="medico-info">
+        <div class="medico-nome">Dr. Carlos Oliveira</div>
+        <div class="medico-crm">CRM-PR 38.774</div>
+        <span class="medico-esp">Pediatria</span>
+      </div>
+    </div>
+    <div class="medico-card">
+      <div class="medico-foto">👩‍⚕️</div>
+      <div class="medico-info">
+        <div class="medico-nome">Dra. Mariana Costa</div>
+        <div class="medico-crm">CRM-PR 61.108</div>
+        <span class="medico-esp">Cardiologia</span>
+      </div>
+    </div>
+    <div class="medico-card">
+      <div class="medico-foto">👨‍⚕️</div>
+      <div class="medico-info">
+        <div class="medico-nome">Dr. Rafael Santos</div>
+        <div class="medico-crm">CRM-PR 47.553</div>
+        <span class="medico-esp">Clínica Geral</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section id="depoimentos">
+  <div class="reveal">
+    <div class="section-eyebrow">Depoimentos</div>
+    <h2 class="section-title">O que nossos pacientes<br/>dizem sobre nós</h2>
+  </div>
+  <div class="dep-grid reveal">
+    <div class="dep-card">
+      <div class="dep-stars">★★★★★</div>
+      <p class="dep-text">"Agendei pelo WhatsApp em menos de 2 minutos. A consulta foi no horário e o Dr. Carlos foi muito atencioso com minha filha."</p>
+      <div class="dep-autor">
+        <div class="dep-avatar">👩</div>
+        <div><div class="dep-nome">Patrícia M.</div><div class="dep-info">Paciente há 3 anos</div></div>
+      </div>
+    </div>
+    <div class="dep-card">
+      <div class="dep-stars">★★★★★</div>
+      <p class="dep-text">"Finalmente uma clínica que respeita o horário dos pacientes. Sem fila, atendimento rápido e o médico realmente ouve você."</p>
+      <div class="dep-autor">
+        <div class="dep-avatar">👨</div>
+        <div><div class="dep-nome">Roberto A.</div><div class="dep-info">Paciente há 5 anos</div></div>
+      </div>
+    </div>
+    <div class="dep-card">
+      <div class="dep-stars">★★★★★</div>
+      <p class="dep-text">"O check-up preventivo mudou minha visão sobre saúde. Me sinto muito mais segura sabendo o que está acontecendo no meu corpo."</p>
+      <div class="dep-autor">
+        <div class="dep-avatar">👩</div>
+        <div><div class="dep-nome">Fernanda S.</div><div class="dep-info">Paciente há 2 anos</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AGENDAMENTO -->
+<section id="agendar">
+  <div class="agendar-layout">
+    <div class="agendar-info reveal">
+      <div class="section-eyebrow">Agendamento</div>
+      <h2 class="section-title">Vamos cuidar<br/>de você?</h2>
+      <p class="section-body">Preencha o formulário e nossa equipe entra em contato em até 2 horas para confirmar seu horário.</p>
+      <div class="contact-items">
+        <div class="contact-item">
+          <div class="ci-icon">📍</div>
+          <div class="ci-text">
+            <strong>Endereço</strong>
+            <span>Rua das Flores, 1240 — Batel, Curitiba-PR</span>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="ci-icon">📱</div>
+          <div class="ci-text">
+            <strong>WhatsApp</strong>
+            <span>(41) 99000-0000</span>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="ci-icon">🕐</div>
+          <div class="ci-text">
+            <strong>Horário</strong>
+            <span>Segunda a sexta · 8h às 18h</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <div class="agendar-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nome completo</label>
+            <input type="text" placeholder="Seu nome" />
+          </div>
+          <div class="form-group">
+            <label>Telefone / WhatsApp</label>
+            <input type="tel" placeholder="(41) 9xxxx-xxxx" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Especialidade desejada</label>
+          <select>
+            <option value="">Selecionar...</option>
+            <option>Medicina de Família</option>
+            <option>Pediatria</option>
+            <option>Cardiologia</option>
+            <option>Check-up Preventivo</option>
+            <option>Telemedicina</option>
+            <option>Medicina Ocupacional</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Observações</label>
+          <textarea rows="3" placeholder="Descreva brevemente o motivo da consulta (opcional)..."></textarea>
+        </div>
+        <button class="form-submit">Solicitar agendamento →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Clínica Saúde Plena</div>
+  <div class="footer-info">
+    Curitiba, PR · CRM-PR ativo<br/>
+    © 2025 · Todos os direitos reservados<br/>
+    <span style="color:#4a2018;font-size:0.6rem;">Site criado por <a href="https://bartras-consulting.vercel.app" style="color:#8B5E42;text-decoration:none;" target="_blank">Bartras Consulting</a></span>
+  </div>
+</footer>
+
+<!-- CHAT TOGGLE -->
+<button id="cb-toggle" onclick="cbToggle()" title="Falar com a clínica">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 2H4C2.9 2 2 2.9 2 4v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 10H6V10h12v2zm0-3H6V7h12v2z"/>
+  </svg>
+</button>
+
+<!-- CHAT BOX -->
+<div id="cb-box">
+  <div id="cb-header">
+    <div class="cb-avatar">🏥</div>
+    <div class="cb-info">
+      <strong>Clínica Saúde Plena</strong>
+      <span>● online agora</span>
+    </div>
+    <button id="cb-close" onclick="cbToggle()">✕</button>
+  </div>
+  <div id="cb-messages"></div>
+  <div id="cb-options"></div>
+  <div id="cb-input-row">
+    <input id="cb-input" type="text" placeholder="Digite aqui..." />
+    <button id="cb-send">→</button>
+  </div>
+</div>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => observer.observe(r));
+
+  // Chatbot
+  (function() {
+    const state = { step: 'start' };
+
+    const flows = {
+      start: {
+        msg: 'Olá! 😊 Bem-vindo à Clínica Saúde Plena.\n\nComo posso te ajudar hoje?',
+        opts: [
+          { label: '📅 Agendar consulta', next: 'agendar_esp' },
+          { label: '🔬 Ver especialidades', next: 'especialidades' },
+          { label: '🕐 Horários e endereço', next: 'horarios' },
+          { label: '📋 Resultado de exame', next: 'exame' },
+        ]
+      },
+      agendar_esp: {
+        msg: 'Ótimo! Qual especialidade você precisa?',
+        opts: [
+          { label: '👨‍👩‍👧 Medicina de Família', next: 'agendar_ok' },
+          { label: '🍼 Pediatria', next: 'agendar_ok' },
+          { label: '❤️ Cardiologia', next: 'agendar_ok' },
+          { label: '💻 Telemedicina', next: 'agendar_ok' },
+          { label: '← Voltar', next: 'start' },
+        ]
+      },
+      agendar_ok: {
+        msg: '✅ Perfeito! Para finalizar seu agendamento, preencha o formulário na parte de baixo da página ou nos chame pelo WhatsApp:\n\n📱 (41) 99000-0000\n\nRespondemos em até 2 horas!',
+        opts: [
+          { label: '📝 Ir para o formulário', next: 'go_form' },
+          { label: '← Voltar', next: 'start' },
+        ]
+      },
+      especialidades: {
+        msg: 'Atendemos nas seguintes especialidades:\n\n👨‍👩‍👧 Medicina de Família\n🍼 Pediatria\n❤️ Cardiologia\n🧘 Check-up Preventivo\n💻 Telemedicina\n🩺 Medicina Ocupacional',
+        opts: [
+          { label: '📅 Agendar consulta', next: 'agendar_esp' },
+          { label: '← Voltar', next: 'start' },
+        ]
+      },
+      horarios: {
+        msg: '📍 Rua das Flores, 1240 — Batel, Curitiba-PR\n\n🕐 Segunda a sexta: 8h às 18h\n📱 WhatsApp: (41) 99000-0000\n📧 contato@saudeplena.com.br',
+        opts: [
+          { label: '📅 Agendar consulta', next: 'agendar_esp' },
+          { label: '← Voltar', next: 'start' },
+        ]
+      },
+      exame: {
+        msg: '📋 Para acessar seus resultados de exame, entre em contato diretamente:\n\n📱 WhatsApp: (41) 99000-0000\n📧 exames@saudeplena.com.br\n\nTenha em mãos seu CPF e data do exame.',
+        opts: [
+          { label: '← Voltar', next: 'start' },
+        ]
+      },
+    };
+
+    function addMsg(text, type) {
+      const el = document.createElement('div');
+      el.className = `cb-msg ${type}`;
+      el.textContent = text;
+      document.getElementById('cb-messages').appendChild(el);
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function renderStep(key) {
+      state.step = key;
+      if (key === 'go_form') {
+        document.querySelector('#agendar').scrollIntoView({ behavior: 'smooth' });
+        cbToggle();
+        return;
+      }
+      const flow = flows[key];
+      if (!flow) return;
+      setTimeout(() => {
+        addMsg(flow.msg, 'bot');
+        const optsEl = document.getElementById('cb-options');
+        optsEl.innerHTML = '';
+        document.getElementById('cb-input-row').classList.remove('show');
+        if (flow.opts) {
+          flow.opts.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'cb-opt';
+            btn.textContent = opt.label;
+            btn.onclick = () => {
+              addMsg(opt.label, 'user');
+              optsEl.innerHTML = '';
+              setTimeout(() => renderStep(opt.next), 350);
+            };
+            optsEl.appendChild(btn);
+          });
+        }
+      }, key === 'start' ? 300 : 500);
+    }
+
+    window.cbToggle = function() {
+      const box = document.getElementById('cb-box');
+      const isOpen = box.classList.toggle('open');
+      if (isOpen && document.getElementById('cb-messages').children.length === 0) {
+        renderStep('start');
+      }
+    };
+
+    document.getElementById('cb-send').onclick = () => {};
+    document.getElementById('cb-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') {}
+    });
+  })();
+</script>
+
+</body>
+</html>
