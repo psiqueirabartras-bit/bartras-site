@@ -548,6 +548,153 @@
     }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
+    /* ─── PORTFÓLIO ─── */
+    #portfolio { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-top: 4rem;
+    }
+
+    .portfolio-card {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      background: var(--bg3);
+      transition: border-color 0.25s, transform 0.25s;
+      display: flex;
+      flex-direction: column;
+    }
+    .portfolio-card:hover {
+      border-color: var(--teal-glow);
+      transform: translateY(-4px);
+    }
+
+    .portfolio-preview {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .portfolio-preview iframe {
+      width: 200%;
+      height: 200%;
+      transform: scale(0.5);
+      transform-origin: top left;
+      pointer-events: none;
+      border: none;
+    }
+
+    .portfolio-preview-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, var(--bg3) 100%);
+    }
+
+    .portfolio-tag {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--teal);
+      background: rgba(14,16,18,0.85);
+      border: 1px solid var(--border);
+      padding: 3px 10px;
+      border-radius: 2px;
+      letter-spacing: 0.1em;
+    }
+
+    .portfolio-info {
+      padding: 1.4rem 1.4rem 1.6rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .portfolio-nicho {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--teal);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .portfolio-name {
+      font-family: var(--sans);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    .portfolio-desc {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+      margin-bottom: 1.2rem;
+      flex: 1;
+    }
+
+    .portfolio-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 1.4rem;
+    }
+
+    .portfolio-feat {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 3px 9px;
+      border-radius: 2px;
+      letter-spacing: 0.05em;
+    }
+
+    .portfolio-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--teal);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      border: 1px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 2px;
+      transition: background 0.2s, border-color 0.2s;
+      align-self: flex-start;
+    }
+    .portfolio-link:hover { background: var(--teal-dim); border-color: var(--teal); }
+
+    .portfolio-coming {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      gap: 0.6rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .portfolio-coming-icon { font-size: 2rem; opacity: 0.25; }
+    .portfolio-coming-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
     /* ─── PREÇOS ─── */
     #precos { background: var(--bg); border-top: 1px solid var(--border); }
 
@@ -822,6 +969,7 @@
     <li><a href="#servicos">Serviços</a></li>
     <li><a href="#processo">Processo</a></li>
     <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#portfolio">Portfólio</a></li>
     <li><a href="#precos">Preços</a></li>
   </ul>
   <a href="#contato" class="nav-cta">falar com a equipe →</a>
@@ -997,10 +1145,83 @@
   </div>
 </section>
 
+<!-- PORTFÓLIO -->
+<section id="portfolio">
+  <div class="reveal">
+    <div class="section-label">04 — Portfólio</div>
+    <h2 class="section-title">Demos por segmento</h2>
+    <p class="section-body">
+      Cada demo abaixo foi construído especificamente para um nicho de mercado — para que você veja exatamente como seria o site da sua empresa.
+    </p>
+  </div>
+  <div class="portfolio-grid reveal">
+
+    <!-- Card 1: Clínica -->
+    <div class="portfolio-card">
+      <div class="portfolio-preview">
+        <iframe src="demos/clinica.html" loading="lazy" title="Demo Clínica Médica" scrolling="no"></iframe>
+        <div class="portfolio-preview-overlay"></div>
+        <span class="portfolio-tag">DEMO</span>
+      </div>
+      <div class="portfolio-info">
+        <div class="portfolio-nicho">Saúde · Clínica Médica</div>
+        <div class="portfolio-name">Clínica Saúde Plena</div>
+        <p class="portfolio-desc">Site institucional com chatbot de agendamento integrado. Especialidades, equipe médica, depoimentos e formulário de contato.</p>
+        <div class="portfolio-features">
+          <span class="portfolio-feat">Site institucional</span>
+          <span class="portfolio-feat">Chatbot WhatsApp</span>
+          <span class="portfolio-feat">Agendamento online</span>
+          <span class="portfolio-feat">Responsivo</span>
+        </div>
+        <a href="demos/clinica.html" target="_blank" class="portfolio-link">Ver demo ao vivo →</a>
+      </div>
+    </div>
+
+    <!-- Card 2: Em breve -->
+    <div class="portfolio-card">
+      <div class="portfolio-coming">
+        <div class="portfolio-coming-icon">⚖️</div>
+        <div class="portfolio-coming-label">Em breve</div>
+      </div>
+      <div class="portfolio-info">
+        <div class="portfolio-nicho">Jurídico · Advocacia</div>
+        <div class="portfolio-name">Escritório de Advocacia</div>
+        <p class="portfolio-desc">Demo em desenvolvimento. Site institucional com áreas de atuação, equipe, artigos jurídicos e formulário de consulta inicial.</p>
+        <div class="portfolio-features">
+          <span class="portfolio-feat">Site institucional</span>
+          <span class="portfolio-feat">Blog jurídico</span>
+          <span class="portfolio-feat">Formulário de consulta</span>
+        </div>
+        <a href="#contato" class="portfolio-link" style="opacity:0.5;pointer-events:none">Em desenvolvimento</a>
+      </div>
+    </div>
+
+    <!-- Card 3: Em breve -->
+    <div class="portfolio-card">
+      <div class="portfolio-coming">
+        <div class="portfolio-coming-icon">🔧</div>
+        <div class="portfolio-coming-label">Em breve</div>
+      </div>
+      <div class="portfolio-info">
+        <div class="portfolio-nicho">Serviços · Empresa de Manutenção</div>
+        <div class="portfolio-name">Prestador de Serviços</div>
+        <p class="portfolio-desc">Demo em desenvolvimento. Site com portfólio de serviços, orçamento via chatbot, área de cobertura e depoimentos de clientes.</p>
+        <div class="portfolio-features">
+          <span class="portfolio-feat">Site institucional</span>
+          <span class="portfolio-feat">Chatbot de orçamento</span>
+          <span class="portfolio-feat">Galeria de serviços</span>
+        </div>
+        <a href="#contato" class="portfolio-link" style="opacity:0.5;pointer-events:none">Em desenvolvimento</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 <!-- PREÇOS -->
 <section id="precos">
   <div class="reveal">
-    <div class="section-label">04 — Investimento</div>
+    <div class="section-label">05 — Investimento</div>
     <h2 class="section-title">Transparência<br/>desde o início</h2>
     <p class="section-body">
       Valores de referência para cada perfil de projeto. O orçamento final é personalizado após o diagnóstico.
@@ -1066,7 +1287,7 @@
 <section id="contato">
   <div class="contato-layout">
     <div class="reveal">
-      <div class="section-label">05 — Contato</div>
+      <div class="section-label">06 — Contato</div>
       <h2 class="section-title">Vamos conversar<br/>sobre seu projeto?</h2>
       <p class="section-body">
         Nenhum compromisso. Respondemos em até 72 horas com uma análise inicial gratuita do seu projeto.
