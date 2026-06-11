@@ -104,16 +104,25 @@
     .form-group select option { background: var(--bg3); }
 
     /* KANBAN */
+    .kanban-toolbar { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1rem; flex-wrap: wrap; }
+    .kanban-toolbar .toolbar-label { font-size: 0.62rem; color: var(--text-dim); letter-spacing: 0.12em; text-transform: uppercase; }
+    .kanban-toolbar select { background: var(--bg3); border: 1px solid var(--border); color: var(--text); font-family: var(--mono); font-size: 0.75rem; padding: 8px 12px; border-radius: 3px; outline: none; min-width: 240px; transition: border-color 0.2s; }
+    .kanban-toolbar select:focus { border-color: var(--teal); }
+    .kanban-toolbar select option { background: var(--bg3); }
+    .kanban-hint { font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.04em; margin-left: auto; }
     .kanban-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; align-items: start; }
     .kanban-col { background: var(--bg2); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
     .kanban-col-header { padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
     .kanban-col-title { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
     .kanban-count { font-size: 0.6rem; background: var(--teal-dim); color: var(--teal); padding: 1px 7px; border-radius: 10px; }
-    .kanban-cards { padding: 0.7rem; display: flex; flex-direction: column; gap: 0.5rem; min-height: 80px; }
-    .kanban-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 3px; padding: 0.7rem 0.8rem; transition: border-color 0.2s; }
+    .kanban-cards { padding: 0.7rem; display: flex; flex-direction: column; gap: 0.5rem; min-height: 80px; transition: background 0.15s, outline-color 0.15s; border-radius: 4px; }
+    .kanban-cards.drag-over { background: var(--teal-dim); outline: 1px dashed var(--border2); outline-offset: -4px; }
+    .kanban-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 3px; padding: 0.7rem 0.8rem; transition: border-color 0.2s, opacity 0.2s; cursor: grab; }
     .kanban-card:hover { border-color: var(--border2); }
-    .kanban-card-title { font-size: 0.75rem; color: var(--white); margin-bottom: 4px; }
-    .kanban-card-meta { font-size: 0.62rem; color: var(--text-dim); }
+    .kanban-card:active { cursor: grabbing; }
+    .kanban-card.dragging { opacity: 0.4; border-color: var(--teal); }
+    .kanban-card-title { font-size: 0.75rem; color: var(--white); margin-bottom: 4px; pointer-events: none; }
+    .kanban-card-meta { font-size: 0.62rem; color: var(--text-dim); pointer-events: none; }
 
     /* FINANCEIRO */
     .fin-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem; }
@@ -254,11 +263,18 @@
 
     <!-- KANBAN -->
     <div class="page" id="page-kanban">
+      <div class="kanban-toolbar">
+        <span class="toolbar-label">Projeto:</span>
+        <select id="kanban-filtro-projeto" onchange="renderKanban()">
+          <option value="">Todos os projetos</option>
+        </select>
+        <span class="kanban-hint">arraste os cards entre as colunas para mudar o status</span>
+      </div>
       <div class="kanban-board">
-        <div class="kanban-col"><div class="kanban-col-header"><span class="kanban-col-title">A fazer</span><span class="kanban-count" id="cnt-afazer">0</span></div><div class="kanban-cards" id="col-afazer"></div></div>
-        <div class="kanban-col"><div class="kanban-col-header"><span class="kanban-col-title">Em andamento</span><span class="kanban-count" id="cnt-andamento">0</span></div><div class="kanban-cards" id="col-andamento"></div></div>
-        <div class="kanban-col"><div class="kanban-col-header"><span class="kanban-col-title">Revisão</span><span class="kanban-count" id="cnt-revisao">0</span></div><div class="kanban-cards" id="col-revisao"></div></div>
-        <div class="kanban-col"><div class="kanban-col-header"><span class="kanban-col-title">Concluído</span><span class="kanban-count" id="cnt-concluido">0</span></div><div class="kanban-cards" id="col-concluido"></div></div>
+        <div class="kanban-col"><div class="kanban-col-header"><span class="kanban-col-title">A fazer</span><span class="kanban-count" id="cnt-afazer">0</span></div><div class="kanban-cards" id="col-afazer" ondragover="kanbanDragOver(event)" ondragleave="kanbanDragLeave(event)" ondrop="kanbanDrop(event,'afazer')"></div></div>
+        <div class="kanban-col"><div class="kanban-col-header"><span class="kanban-col-title">Em andamento</span><span class="kanban-count" id="cnt-andamento">0</span></div><div class="kanban-cards" id="col-andamento" ondragover="kanbanDragOver(event)" ondragleave="kanbanDragLeave(event)" ondrop="kanbanDrop(event,'andamento')"></div></div>
+        <div class="kanban-col"><div class="kanban-col-header"><span class="kanban-col-title">Revisão</span><span class="kanban-count" id="cnt-revisao">0</span></div><div class="kanban-cards" id="col-revisao" ondragover="kanbanDragOver(event)" ondragleave="kanbanDragLeave(event)" ondrop="kanbanDrop(event,'revisao')"></div></div>
+        <div class="kanban-col"><div class="kanban-col-header"><span class="kanban-col-title">Concluído</span><span class="kanban-count" id="cnt-concluido">0</span></div><div class="kanban-cards" id="col-concluido" ondragover="kanbanDragOver(event)" ondragleave="kanbanDragLeave(event)" ondrop="kanbanDrop(event,'concluido')"></div></div>
       </div>
     </div>
 
@@ -521,7 +537,12 @@ window.abrirModal = async (id, modo, dados) => {
   document.querySelectorAll(`#${id} [type=hidden]`).forEach(el => el.value = '');
 
   if (id === 'modal-projeto') await popularSelect('p-cliente', 'clientes', 'nome');
-  if (id === 'modal-tarefa')  await popularSelect('t-projeto', 'projetos', 'nome');
+  if (id === 'modal-tarefa') {
+    await popularSelect('t-projeto', 'projetos', 'nome');
+    // Se estiver vendo o quadro de um projeto específico, já vincula a tarefa a ele
+    const filtroKanban = document.getElementById('kanban-filtro-projeto')?.value;
+    if (modo === 'novo' && filtroKanban) document.getElementById('t-projeto').value = filtroKanban;
+  }
   if (id === 'modal-proposta') {
     await popularSelect('prop-cliente', 'clientes', 'nome');
     if (modo === 'editar' && dados) {
@@ -746,7 +767,7 @@ async function renderProjetos() {
   const { data } = await sb.from('projetos').select('*, clientes(nome)').order('criado_em', { ascending: false });
   if (!(data||[]).length) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">🗂️</div>Nenhum projeto cadastrado</div>'; return; }
   el.innerHTML = '<table><thead><tr><th>Projeto</th><th>Cliente</th><th>Tipo</th><th>Valor</th><th>Prazo</th><th>Status</th><th></th></tr></thead><tbody>' +
-    data.map(p=>`<tr><td><strong style="color:var(--white)">${p.nome}</strong></td><td>${p.clientes?.nome||'—'}</td><td>${p.tipo||'—'}</td><td>${fmt(p.valor)}</td><td>${p.prazo||'—'}</td><td>${badgeStatus(p.status)}</td><td><div class="td-actions"><button class="btn-sm" onclick='editarRegistro("modal-projeto","projetos","${p.id}")'>editar</button><button class="btn-sm del" onclick='deletar("projetos","${p.id}","projetos")'>excluir</button></div></td></tr>`).join('') + '</tbody></table>';
+    data.map(p=>`<tr><td><strong style="color:var(--white)">${p.nome}</strong></td><td>${p.clientes?.nome||'—'}</td><td>${p.tipo||'—'}</td><td>${fmt(p.valor)}</td><td>${p.prazo||'—'}</td><td>${badgeStatus(p.status)}</td><td><div class="td-actions"><button class="btn-sm" onclick='abrirKanbanProjeto("${p.id}")'>kanban</button><button class="btn-sm" onclick='editarRegistro("modal-projeto","projetos","${p.id}")'>editar</button><button class="btn-sm del" onclick='deletar("projetos","${p.id}","projetos")'>excluir</button></div></td></tr>`).join('') + '</tbody></table>';
 }
 
 // ── KANBAN ──
@@ -762,17 +783,75 @@ window.salvarTarefa = async () => {
   renderKanban();
 };
 
+async function carregarFiltroKanban() {
+  const sel = document.getElementById('kanban-filtro-projeto');
+  const atual = sel.value;
+  const { data } = await sb.from('projetos').select('id,nome').order('nome');
+  sel.innerHTML = '<option value="">Todos os projetos</option>' +
+    (data||[]).map(p=>`<option value="${p.id}">${p.nome}</option>`).join('');
+  sel.value = atual; // preserva a seleção atual ao recarregar
+}
+
 async function renderKanban() {
-  const { data } = await sb.from('tarefas').select('*, projetos(nome)').order('criado_em');
+  await carregarFiltroKanban();
+  const filtro = document.getElementById('kanban-filtro-projeto').value;
+  let query = sb.from('tarefas').select('*, projetos(nome)').order('criado_em');
+  if (filtro) query = query.eq('projeto_id', filtro);
+  const { data } = await query;
   const cols = ['afazer','andamento','revisao','concluido'];
   cols.forEach(col => {
     const items = (data||[]).filter(t => t.coluna === col);
     document.getElementById('cnt-' + col).textContent = items.length;
     const el = document.getElementById('col-' + col);
     if (!items.length) { el.innerHTML = '<div style="color:var(--text-dim);font-size:0.65rem;text-align:center;padding:1rem 0">vazio</div>'; return; }
-    el.innerHTML = items.map(t=>`<div class="kanban-card" onclick='editarRegistro("modal-tarefa","tarefas","${t.id}")'><div class="kanban-card-title">${t.titulo}</div><div class="kanban-card-meta">${t.projetos?.nome||'—'}</div></div>`).join('');
+    el.innerHTML = items.map(t=>`<div class="kanban-card" draggable="true" data-id="${t.id}" ondragstart="kanbanDragStart(event)" ondragend="kanbanDragEnd(event)" onclick='editarRegistro("modal-tarefa","tarefas","${t.id}")'><div class="kanban-card-title">${t.titulo}</div><div class="kanban-card-meta">${t.projetos?.nome||'—'}</div></div>`).join('');
   });
 }
+
+// ── KANBAN: arrastar e soltar ──
+let kanbanDragId = null;
+
+window.kanbanDragStart = (e) => {
+  kanbanDragId = e.currentTarget.dataset.id;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed = 'move';
+};
+window.kanbanDragEnd = (e) => {
+  e.currentTarget.classList.remove('dragging');
+  document.querySelectorAll('.kanban-cards.drag-over').forEach(c => c.classList.remove('drag-over'));
+};
+window.kanbanDragOver = (e) => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+};
+window.kanbanDragLeave = (e) => {
+  e.currentTarget.classList.remove('drag-over');
+};
+window.kanbanDrop = async (e, coluna) => {
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!kanbanDragId) return;
+  const id = kanbanDragId;
+  kanbanDragId = null;
+  const { error } = await sb.from('tarefas').update({ coluna }).eq('id', id);
+  if (error) { alert('Erro ao mover: ' + error.message); return; }
+  await renderKanban();
+};
+
+// Abre o Kanban já filtrado por um projeto específico
+window.abrirKanbanProjeto = async (projetoId) => {
+  const btnKanban = [...document.querySelectorAll('.sb-item')].find(b => b.textContent.includes('Kanban'));
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-kanban').classList.add('active');
+  if (btnKanban) btnKanban.classList.add('active');
+  document.getElementById('page-title').textContent = 'Kanban';
+  document.getElementById('topbar-actions').innerHTML = topbarActions['kanban'] || '';
+  await carregarFiltroKanban();
+  document.getElementById('kanban-filtro-projeto').value = projetoId;
+  await renderKanban();
+};
 
 // ── FINANCEIRO ──
 window.salvarMovimentacao = async () => {
