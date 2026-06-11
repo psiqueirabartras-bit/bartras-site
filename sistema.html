@@ -807,6 +807,7 @@ async function renderKanban() {
     el.innerHTML = items.map(t=>`<div class="kanban-card" draggable="true" data-id="${t.id}" ondragstart="kanbanDragStart(event)" ondragend="kanbanDragEnd(event)" onclick='editarRegistro("modal-tarefa","tarefas","${t.id}")'><div class="kanban-card-title">${t.titulo}</div><div class="kanban-card-meta">${t.projetos?.nome||'—'}</div></div>`).join('');
   });
 }
+window.renderKanban = renderKanban; // exposto para o onchange do seletor de projeto
 
 // ── KANBAN: arrastar e soltar ──
 let kanbanDragId = null;
