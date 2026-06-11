@@ -121,8 +121,13 @@
     .kanban-card:hover { border-color: var(--border2); }
     .kanban-card:active { cursor: grabbing; }
     .kanban-card.dragging { opacity: 0.4; border-color: var(--teal); }
-    .kanban-card-title { font-size: 0.75rem; color: var(--white); margin-bottom: 4px; pointer-events: none; }
-    .kanban-card-meta { font-size: 0.62rem; color: var(--text-dim); pointer-events: none; }
+    .kanban-card-title { font-size: 0.75rem; color: var(--white); margin-bottom: 4px; }
+    .kanban-card-meta { font-size: 0.62rem; color: var(--text-dim); display: flex; align-items: center; gap: 6px; }
+    .kanban-card * { pointer-events: none; }
+    .card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0; }
+    .card-tag { font-size: 0.55rem; letter-spacing: 0.04em; background: var(--teal-dim); color: var(--teal); border: 1px solid var(--border); padding: 1px 6px; border-radius: 8px; }
+    .prio-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+    .prio-alta { background: var(--red); } .prio-media { background: var(--yellow); } .prio-baixa { background: var(--text-muted); }
 
     /* FINANCEIRO */
     .fin-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem; }
@@ -164,6 +169,29 @@
     .fin-tab:not(:last-child) { border-right: 1px solid var(--border); }
     .fin-section { display: none; }
     .fin-section.active { display: block; }
+
+    /* MODAL DE TAREFA — abas, tags, comentários */
+    .modal-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .modal-tab { flex: 1; padding: 10px; background: none; border: none; font-family: var(--mono); font-size: 0.72rem; color: var(--text-muted); cursor: pointer; letter-spacing: 0.06em; transition: background 0.15s, color 0.15s; border-bottom: 2px solid transparent; }
+    .modal-tab:hover { color: var(--text); }
+    .modal-tab.active { color: var(--teal); border-bottom-color: var(--teal); background: var(--teal-dim); }
+    .modal-tab-section { display: none; }
+    .modal-tab-section.active { display: flex; flex-direction: column; gap: 0.9rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+    .tag-input-row { display: flex; gap: 0.5rem; }
+    .tag-input-row input { flex: 1; }
+    .tag-add-btn { background: var(--teal-dim); border: 1px solid var(--border2); color: var(--teal); font-family: var(--mono); font-size: 0.72rem; padding: 0 14px; border-radius: 3px; cursor: pointer; transition: background 0.15s; }
+    .tag-add-btn:hover { background: var(--teal-glow); }
+    .tags-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; min-height: 8px; }
+    .tag-chip { display: inline-flex; align-items: center; gap: 5px; font-size: 0.65rem; letter-spacing: 0.03em; background: var(--teal-dim); color: var(--teal); border: 1px solid var(--border2); padding: 3px 6px 3px 9px; border-radius: 10px; }
+    .tag-chip button { background: none; border: none; color: var(--teal); cursor: pointer; font-size: 0.7rem; line-height: 1; padding: 0; opacity: 0.7; }
+    .tag-chip button:hover { opacity: 1; }
+    .comentarios-lista { display: flex; flex-direction: column; gap: 0.6rem; max-height: 240px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+    .comentario { background: var(--bg3); border: 1px solid var(--border); border-left: 2px solid var(--teal); border-radius: 3px; padding: 0.6rem 0.8rem; }
+    .comentario-texto { font-size: 0.76rem; color: var(--text); line-height: 1.55; white-space: pre-wrap; }
+    .comentario-meta { font-size: 0.6rem; color: var(--text-dim); letter-spacing: 0.06em; margin-top: 5px; }
+    .comentarios-empty { color: var(--text-dim); font-size: 0.72rem; text-align: center; padding: 1.5rem 1rem; letter-spacing: 0.04em; }
+    .comentario-form { display: flex; flex-direction: column; gap: 0.5rem; border-top: 1px solid var(--border); padding-top: 0.9rem; }
     @media (max-width: 900px) { .chart-grid, .chart-grid-3 { grid-template-columns: 1fr; } }
     @media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } .kanban-board { grid-template-columns: 1fr 1fr; } .fin-summary { grid-template-columns: 1fr; } }
     @media (max-width: 600px) { #sidebar { display: none; } .kanban-board { grid-template-columns: 1fr; } }
@@ -400,16 +428,47 @@
 </div>
 
 <div class="modal-overlay" id="modal-tarefa">
-  <div class="modal">
+  <div class="modal" style="max-width:640px">
     <div class="modal-header"><div class="modal-title" id="modal-tarefa-title">Nova Tarefa</div><button class="modal-close" onclick="fecharModal('modal-tarefa')">✕</button></div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="tarefaTab('detalhes',this)">Detalhes</button>
+      <button class="modal-tab" onclick="tarefaTab('comentarios',this)">Comentários</button>
+    </div>
     <div class="modal-body">
       <input type="hidden" id="t-id" />
-      <div class="form-group"><label>Título *</label><input id="t-titulo" placeholder="Criar layout do site" /></div>
-      <div class="form-group"><label>Projeto</label><select id="t-projeto"><option value="">Selecionar projeto...</option></select></div>
-      <div class="form-group"><label>Coluna</label>
-        <select id="t-coluna"><option value="afazer">A fazer</option><option value="andamento">Em andamento</option><option value="revisao">Revisão</option><option value="concluido">Concluído</option></select>
+
+      <!-- ABA DETALHES -->
+      <div class="modal-tab-section active" id="tarefa-tab-detalhes">
+        <div class="form-group"><label>Título *</label><input id="t-titulo" placeholder="Criar layout do site" /></div>
+        <div class="form-group"><label>Projeto</label><select id="t-projeto"><option value="">Selecionar projeto...</option></select></div>
+        <div class="form-row">
+          <div class="form-group"><label>Coluna</label>
+            <select id="t-coluna"><option value="afazer">A fazer</option><option value="andamento">Em andamento</option><option value="revisao">Revisão</option><option value="concluido">Concluído</option></select>
+          </div>
+          <div class="form-group"><label>Prioridade</label>
+            <select id="t-prioridade"><option value="baixa">Baixa</option><option value="media">Média</option><option value="alta">Alta</option></select>
+          </div>
+        </div>
+        <div class="form-group"><label>Prazo</label><input id="t-prazo" type="date" /></div>
+        <div class="form-group">
+          <label>Tags</label>
+          <div class="tag-input-row">
+            <input id="t-tag-input" placeholder="Digite uma tag e Enter" onkeydown="if(event.key==='Enter'){event.preventDefault();adicionarTagTarefa();}" />
+            <button type="button" class="tag-add-btn" onclick="adicionarTagTarefa()">+ Adicionar</button>
+          </div>
+          <div class="tags-list" id="t-tags-list"></div>
+        </div>
+        <div class="form-group"><label>Descrição</label><textarea id="t-obs" rows="3"></textarea></div>
       </div>
-      <div class="form-group"><label>Observação</label><textarea id="t-obs" rows="2"></textarea></div>
+
+      <!-- ABA COMENTÁRIOS -->
+      <div class="modal-tab-section" id="tarefa-tab-comentarios">
+        <div class="comentarios-lista" id="t-comentarios-lista"></div>
+        <div class="comentario-form" id="t-comentario-form">
+          <textarea id="t-comentario-input" rows="2" placeholder="Registre uma atualização ou atividade realizada..."></textarea>
+          <button class="btn-action" style="align-self:flex-end" onclick="adicionarComentario()">+ Adicionar comentário</button>
+        </div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-action secondary" onclick="fecharModal('modal-tarefa')">Cancelar</button>
@@ -586,6 +645,8 @@ window.abrirModal = async (id, modo, dados) => {
       document.getElementById('t-titulo').value = dados.titulo || '';
       document.getElementById('t-projeto').value = dados.projeto_id || '';
       document.getElementById('t-coluna').value = dados.coluna || 'afazer';
+      document.getElementById('t-prioridade').value = dados.prioridade || 'media';
+      document.getElementById('t-prazo').value = dados.prazo || '';
       document.getElementById('t-obs').value = dados.observacao || '';
     }
     if (id === 'modal-fin') {
@@ -602,6 +663,20 @@ window.abrirModal = async (id, modo, dados) => {
     document.getElementById('modal-projeto-title') && (document.getElementById('modal-projeto-title').textContent = 'Novo Projeto');
     document.getElementById('modal-tarefa-title') && (document.getElementById('modal-tarefa-title').textContent = 'Nova Tarefa');
     document.getElementById('modal-fin-title') && (document.getElementById('modal-fin-title').textContent = 'Nova Movimentação');
+  }
+
+  // Tarefa: reset de abas/tags e carga de comentários
+  if (id === 'modal-tarefa') {
+    tarefaTab('detalhes', document.querySelector('#modal-tarefa .modal-tab'));
+    if (modo === 'editar' && dados) {
+      tarefaTagsAtual = Array.isArray(dados.tags) ? [...dados.tags] : [];
+      carregarComentarios(dados.id);
+    } else {
+      tarefaTagsAtual = [];
+      document.getElementById('t-prioridade').value = 'media';
+      carregarComentarios(null);
+    }
+    renderTarefaTags();
   }
 
   document.getElementById(id).classList.add('open');
@@ -775,12 +850,88 @@ window.salvarTarefa = async () => {
   const titulo = document.getElementById('t-titulo').value.trim();
   if (!titulo) return alert('Informe o título.');
   const id = document.getElementById('t-id').value;
-  const payload = { titulo, coluna: document.getElementById('t-coluna').value, observacao: document.getElementById('t-obs').value, projeto_id: document.getElementById('t-projeto').value || null };
-  const { error } = id ? await sb.from('tarefas').update(payload).eq('id', id) : await sb.from('tarefas').insert({ ...payload, criado_em: new Date().toISOString() });
+  const payload = {
+    titulo,
+    coluna: document.getElementById('t-coluna').value,
+    prioridade: document.getElementById('t-prioridade').value,
+    prazo: document.getElementById('t-prazo').value || null,
+    tags: tarefaTagsAtual,
+    observacao: document.getElementById('t-obs').value,
+    projeto_id: document.getElementById('t-projeto').value || null
+  };
+  if (id) {
+    const { error } = await sb.from('tarefas').update(payload).eq('id', id);
+    if (error) return alert('Erro: ' + error.message);
+    toast('✓ Tarefa atualizada');
+    fecharModal('modal-tarefa');
+    renderKanban();
+  } else {
+    const { data, error } = await sb.from('tarefas').insert({ ...payload, criado_em: new Date().toISOString() }).select().single();
+    if (error) return alert('Erro: ' + error.message);
+    toast('✓ Tarefa salva — adicione comentários na aba ao lado');
+    // mantém o modal aberto já em modo edição, liberando a aba de comentários
+    document.getElementById('t-id').value = data.id;
+    document.getElementById('modal-tarefa-title').textContent = 'Editar Tarefa';
+    carregarComentarios(data.id);
+    renderKanban();
+  }
+};
+
+// ── TAREFA: abas, tags e comentários ──
+let tarefaTagsAtual = [];
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+window.tarefaTab = (tab, el) => {
+  document.querySelectorAll('#modal-tarefa .modal-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#modal-tarefa .modal-tab-section').forEach(s => s.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('tarefa-tab-' + tab).classList.add('active');
+};
+
+function renderTarefaTags() {
+  const wrap = document.getElementById('t-tags-list');
+  wrap.innerHTML = tarefaTagsAtual.map((tag,i)=>`<span class="tag-chip">${esc(tag)}<button type="button" onclick="removerTagTarefa(${i})">✕</button></span>`).join('');
+}
+window.adicionarTagTarefa = () => {
+  const inp = document.getElementById('t-tag-input');
+  const v = inp.value.trim();
+  if (v && !tarefaTagsAtual.includes(v)) { tarefaTagsAtual.push(v); renderTarefaTags(); }
+  inp.value = '';
+  inp.focus();
+};
+window.removerTagTarefa = (i) => { tarefaTagsAtual.splice(i,1); renderTarefaTags(); };
+
+async function carregarComentarios(tarefaId) {
+  const lista = document.getElementById('t-comentarios-lista');
+  const form = document.getElementById('t-comentario-form');
+  if (!tarefaId) {
+    form.style.display = 'none';
+    lista.innerHTML = '<div class="comentarios-empty">Salve a tarefa primeiro para registrar comentários e atualizações.</div>';
+    return;
+  }
+  form.style.display = 'flex';
+  lista.innerHTML = '<div class="loading">carregando...</div>';
+  const { data, error } = await sb.from('comentarios_tarefa').select('*').eq('tarefa_id', tarefaId).order('criado_em', { ascending: false });
+  if (error) { lista.innerHTML = '<div class="comentarios-empty">Erro ao carregar. Você já rodou o SQL da tabela de comentários?</div>'; return; }
+  if (!(data||[]).length) { lista.innerHTML = '<div class="comentarios-empty">Nenhum comentário ainda. Registre a primeira atualização abaixo.</div>'; return; }
+  lista.innerHTML = data.map(c => {
+    const dt = c.criado_em ? new Date(c.criado_em).toLocaleString('pt-BR') : '';
+    const autor = c.autor ? ` · ${esc(c.autor)}` : '';
+    return `<div class="comentario"><div class="comentario-texto">${esc(c.texto)}</div><div class="comentario-meta">${dt}${autor}</div></div>`;
+  }).join('');
+}
+
+window.adicionarComentario = async () => {
+  const tarefaId = document.getElementById('t-id').value;
+  if (!tarefaId) return alert('Salve a tarefa primeiro.');
+  const inp = document.getElementById('t-comentario-input');
+  const txt = inp.value.trim();
+  if (!txt) return;
+  const { error } = await sb.from('comentarios_tarefa').insert({ tarefa_id: tarefaId, texto: txt, autor: session?.user?.email || null, criado_em: new Date().toISOString() });
   if (error) return alert('Erro: ' + error.message);
-  toast(id ? '✓ Tarefa atualizada' : '✓ Tarefa salva');
-  fecharModal('modal-tarefa');
-  renderKanban();
+  inp.value = '';
+  toast('✓ Comentário adicionado');
+  carregarComentarios(tarefaId);
 };
 
 async function carregarFiltroKanban() {
@@ -804,7 +955,16 @@ async function renderKanban() {
     document.getElementById('cnt-' + col).textContent = items.length;
     const el = document.getElementById('col-' + col);
     if (!items.length) { el.innerHTML = '<div style="color:var(--text-dim);font-size:0.65rem;text-align:center;padding:1rem 0">vazio</div>'; return; }
-    el.innerHTML = items.map(t=>`<div class="kanban-card" draggable="true" data-id="${t.id}" ondragstart="kanbanDragStart(event)" ondragend="kanbanDragEnd(event)" onclick='editarRegistro("modal-tarefa","tarefas","${t.id}")'><div class="kanban-card-title">${t.titulo}</div><div class="kanban-card-meta">${t.projetos?.nome||'—'}</div></div>`).join('');
+    el.innerHTML = items.map(t=>{
+      const tags = (t.tags||[]).map(tg=>`<span class="card-tag">${esc(tg)}</span>`).join('');
+      const prio = t.prioridade || 'media';
+      const prazo = t.prazo ? ` · ${t.prazo.split('-').reverse().join('/')}` : '';
+      return `<div class="kanban-card" draggable="true" data-id="${t.id}" ondragstart="kanbanDragStart(event)" ondragend="kanbanDragEnd(event)" onclick='editarRegistro("modal-tarefa","tarefas","${t.id}")'>`
+        + `<div class="kanban-card-title">${esc(t.titulo)}</div>`
+        + (tags ? `<div class="card-tags">${tags}</div>` : '')
+        + `<div class="kanban-card-meta"><span class="prio-dot prio-${prio}"></span>${esc(t.projetos?.nome||'—')}${prazo}</div>`
+        + `</div>`;
+    }).join('');
   });
 }
 window.renderKanban = renderKanban; // exposto para o onchange do seletor de projeto
